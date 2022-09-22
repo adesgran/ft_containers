@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/17 00:32:55 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/09/22 11:23:21 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ namespace ft
 
 				vector( const vector &vector )
 				{
-					this->content = vector::content;
+					this->content = vector.content;
 				};
 
 				~vector( void )
@@ -43,7 +43,7 @@ namespace ft
 
 				vector &operator=( const vector &vector )
 				{
-					this->content = vector::content;
+					this->content = vector.content;
 					return (*this);
 				};
 

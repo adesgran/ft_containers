@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/17 19:41:02 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/09/22 11:41:36 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <vector>
-#include <tuple>
+//#include <tuple>
 #include "containers/utils/iterator_traits.hpp"
 #include "containers/utils/iterator_tag.hpp"
 #include "containers/utils/reverse_iterator.hpp"
@@ -72,6 +72,6 @@ int main(void)
 
 	std::cout << foo.first << " " << foo.second << std::endl;
 	std::cout << std::boolalpha << (foo < bar) << std::endl;
-	std::cout << ft::get<0>(foo) << std::endl;
+	std::cout << ft::get<1>(foo) << std::endl;
 	return (0);
 }
