@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 17:37:10 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 17:53:50 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "containers/utils/equal.hpp"
 #include "containers/utils/lexicographical_compare.hpp"
 #include "containers/utils/pair.hpp"
+#include "containers/utils/make_pair.hpp"
 //#include <type_traits>
 
 bool	comparator(int a, int b)
@@ -78,5 +79,8 @@ int main(void)
 	std::cout << ft::get<1>(foo) << std::endl;
 	const ft::pair<const int, const char> fooc (100, 'a');
 	std::cout << ft::get<0>(fooc) << std::endl;
+	ft::pair <int, int> fooint (1,1);
+	fooint = ft::make_pair (10.5, 'A');
+	std::cout << fooint.first << " " << fooint.second << std::endl;
 	return (0);
 }
