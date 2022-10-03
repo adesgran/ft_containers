@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 18:35:47 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 16:55:42 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 17:32:56 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,6 @@ namespace ft
 		pair() : first(), second(){};
 		template<class U, class V> pair(const pair<U, V> &pr) : first(pr.first), second(pr.second){};
 		pair(const first_type& a, const second_type &b) : first(a), second(b){};
-		/*
-		pair (std::piecewise_construct_t pwc, std::tuple<T1> first_args,
-                                   std::tuple<T2> second_args) : first(first_args), second(second_args) {} ;
-								   */
 
 		template <class T> void swap(T &a, T &b)
 		{
@@ -83,35 +79,39 @@ namespace ft
 	template <class T1, class T2> struct tuple_element <1, ft::pair<T1,T2> >
 	{ typedef T2 type; };
 
-	template <size_t I, class T1, class T2>
-		typename tuple_element<I,ft::pair<T1,T2> >::type &get(ft::pair<T1,T2> &pr)
+	template <size_t I>
+		struct _pair_get;
+
+	template<>
+		struct _pair_get<0>
 		{
-			if (I == 0)
-				return (pr.first);
-			else if (I == 1)
-				return (pr.second);
+			template <class T1, class T2>
+				static T1 &_move_get(pair<T1, T2> &pr) {return (pr.first);};
+			template <class T1, class T2>
+				static const T1 &_const_get(const pair<T1, T2> &pr) {return (pr.first);};
 		};
-	/*
-	   template <size_t I, class T1, class T2>
-	   typename std::tuple_element<I,pair<T1,T2> >::type&&  get (pair<T1,T2>&&  pr) noexcept
-	   {
-	   if (I == 0)
-	   return (pr.first);
-	   else if (I == 1)
-	   return (pr.second);
-	   };
 
-	   template <size_t I, class T1, class T2>
-	   const typename std::tuple_element< I, pair<T1,T2> >::type&
-	   get (const pair<T1,T2>& pr) noexcept
-	   {
-	   if (I == 0)
-	   return (pr.first);
-	   else if (I == 1)
-	   return (pr.second);
-	   };
+	template<>
+		struct _pair_get<1>
+		{
+			template <class T1, class T2>
+				static T2 &_get(pair<T1, T2> &pr) {return (pr.second);};
+			template <class T1, class T2>
+				static const T2 &_const_get(const pair<T1, T2> &pr) {return (pr.second);};
+		};
 
-*/
+	template <size_t I, class T1, class T2>
+		typename tuple_element< I, ft::pair< T1, T2 > >::type &get(ft::pair< T1, T2 > &pr)
+		{
+			return (_pair_get<I>::_get(pr));
+		};
+
+	template <size_t I, class T1, class T2>
+		const typename tuple_element< I, pair<T1,T2> >::type& get (const pair<T1,T2>& pr)
+		{
+			return (_pair_get<I>::_const_get(pr));
+		};
+
 };
 
 #endif

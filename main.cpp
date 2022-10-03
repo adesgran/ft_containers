@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 16:56:52 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 17:32:31 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ int main(void)
 	//std::cout << ref << std::endl;
 	std::cout << foo.first << " " << foo.second << std::endl;
 	std::cout << std::boolalpha << (foo < bar) << std::endl;
-	std::cout << ft::get<0>(foo) << std::endl;
+	std::cout << ft::get<1>(foo) << std::endl;
+	const ft::pair<const int, const char> fooc (100, 'a');
+	std::cout << ft::get<0>(fooc) << std::endl;
 	return (0);
 }
