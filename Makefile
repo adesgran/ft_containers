@@ -1,7 +1,7 @@
 NAME = ft_containers
 
-CC = g++
-C_FLAGS = -Wall -Wextra -Werror #-std=c++98
+CC = c++
+C_FLAGS = -Wall -Wextra -Werror -std=c++98
 
 C_FILES = main.cpp
 O_FILES = $(C_FILES:.cpp=.o)

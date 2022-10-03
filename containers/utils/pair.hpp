@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 18:35:47 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/22 12:25:19 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 16:55:42 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ namespace ft
 			b = c;
 		}
 		pair	&operator=(const pair &pr) {this->first = pr.first; this->second = pr.second;};
-		void	swap(pair &pr) noexcept (noexcept(swap(first,pr.first)) && noexcept(swap(second,pr.second))){
+		void	swap(pair &pr){
 			swap(first,pr.first);
 			swap(second,pr.second);
 		};
@@ -77,14 +77,14 @@ namespace ft
 
 	template <size_t I, class Tpl> class tuple_element;
 
-	template <class T1, class T2> struct tuple_element <0, ft::pair<T1,T2>>
+	template <class T1, class T2> struct tuple_element <0, ft::pair<T1,T2> >
 	{ typedef T1 type; };
 
-	template <class T1, class T2> struct tuple_element <1, ft::pair<T1,T2>>
+	template <class T1, class T2> struct tuple_element <1, ft::pair<T1,T2> >
 	{ typedef T2 type; };
 
 	template <size_t I, class T1, class T2>
-		typename tuple_element<I,ft::pair<T1,T2>>::type get(ft::pair<T1,T2>&  pr) noexcept
+		typename tuple_element<I,ft::pair<T1,T2> >::type &get(ft::pair<T1,T2> &pr)
 		{
 			if (I == 0)
 				return (pr.first);

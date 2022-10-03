@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 17:15:33 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/17 17:57:23 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 16:53:51 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ namespace ft
 {
 	template <class T, T v> struct integral_constant
 	{
-		static constexpr	T						value = v;
+		static 		T						value = v;
 		typedef				T						value_type;
 		typedef				integral_constant<T, v> type;
-		constexpr			operator T() { return v; };
+		operator T() { return v; };
 	};
 
 	typedef integral_constant<bool, true>	true_type;
@@ -38,8 +38,6 @@ namespace ft
 
 	template <> struct is_integral_type<bool> :						public is_integral_res<bool, true>{};
 	template <> struct is_integral_type<char> :						public is_integral_res<char, true>{};
-	template <> struct is_integral_type<char16_t> :					public is_integral_res<char16_t, true>{};
-	template <> struct is_integral_type<char32_t> :					public is_integral_res<char32_t, true>{};
 	template <> struct is_integral_type<wchar_t> :					public is_integral_res<wchar_t, true>{};
 	template <> struct is_integral_type<signed char> :				public is_integral_res<signed char, true>{};
 	template <> struct is_integral_type<short int> :				public is_integral_res<short int, true>{};

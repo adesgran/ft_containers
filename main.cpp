@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/22 11:41:36 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 16:56:52 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "containers/utils/equal.hpp"
 #include "containers/utils/lexicographical_compare.hpp"
 #include "containers/utils/pair.hpp"
-#include <type_traits>
+//#include <type_traits>
 
 bool	comparator(int a, int b)
 {
@@ -59,19 +59,22 @@ int main(void)
 
 	std::vector<int> myvector(tab, tab + 5);
 	std::vector<int> myvector2(tab, tab + 5);
-	for (auto it=myvector2.begin(); it < myvector2.end(); it++)
+	for (std::vector<int>::iterator it=myvector2.begin(); it < myvector2.end(); it++)
 		(*it)--;
 	std::cout << "Tab comparaison : " << std::boolalpha << equal(myvector.begin(), myvector.end(), tab, comparator) << std::endl;
 	tab[0] = 10;
 	std::cout << "Tab comparaison : " << std::boolalpha << equal(myvector.begin(), myvector.end(), tab) << std::endl;
 	std::cout << "Vector comparaison : " << std::boolalpha << lexicographical_compare(myvector.begin(), myvector.end(), myvector2.begin(), myvector2.end()) << std::endl;
 
-	ft::pair<int, char> foo (10, 'a');
+	ft::pair<int, char> foo (100, 'a');
 	ft::pair<int, char> bar (90, 'z');
+	std::cout << foo.first << " " << foo.second << std::endl;
 	foo.swap(bar);
 
+	//char &ref = foo.first;
+	//std::cout << ref << std::endl;
 	std::cout << foo.first << " " << foo.second << std::endl;
 	std::cout << std::boolalpha << (foo < bar) << std::endl;
-	std::cout << ft::get<1>(foo) << std::endl;
+	std::cout << ft::get<0>(foo) << std::endl;
 	return (0);
 }
