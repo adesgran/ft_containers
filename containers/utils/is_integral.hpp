@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 17:15:33 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 16:53:51 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/03 17:41:54 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ namespace ft
 {
 	template <class T, T v> struct integral_constant
 	{
-		static 		T						value = v;
+		static const 		T						value = v;
 		typedef				T						value_type;
 		typedef				integral_constant<T, v> type;
 		operator T() { return v; };
