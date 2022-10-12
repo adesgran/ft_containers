@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 17:53:50 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/12 14:50:39 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <vector>
+#include <iterator>
 //#include <tuple>
 #include "containers/utils/iterator_traits.hpp"
 #include "containers/utils/iterator_tag.hpp"
@@ -24,6 +25,7 @@
 #include "containers/utils/lexicographical_compare.hpp"
 #include "containers/utils/pair.hpp"
 #include "containers/utils/make_pair.hpp"
+#include "containers/utils/iterator.hpp"
 //#include <type_traits>
 
 bool	comparator(int a, int b)
@@ -35,6 +37,29 @@ template <class T>
 typename ft::enable_if<ft::is_integral<T>::value,bool>::type
 	is_odd (T i) {return bool(i%2);}
 
+class MyIt : public ft::iterator<ft::input_iterator_tag, int>
+{
+	public:
+		MyIt(void) {std::cout << "Hi!" << std::endl;_ref = NULL;};
+		~MyIt(void) {};
+
+		MyIt	operator++(int) { MyIt res = *this; _ref++; return(res);};
+		int test(void){return (_ref ? *_ref : 0);};
+		MyIt	operator++(void) {return (*this);};
+		
+	private:
+		int *_ref;
+};
+
+int main(void)
+{
+	MyIt it;
+	it++;
+	//ft::iterator<ft::input_iterator_tag, int> it;
+	return (0);
+}
+
+/* --MAIN UTILS--
 int main(void)
 {
 	std::vector<int> vec;
@@ -84,3 +109,4 @@ int main(void)
 	std::cout << fooint.first << " " << fooint.second << std::endl;
 	return (0);
 }
+*/
