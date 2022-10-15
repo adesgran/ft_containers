@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/13 10:16:27 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/15 19:06:23 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,12 @@ typename ft::enable_if<ft::is_integral<T>::value,bool>::type
 
 int main(void)
 {
-	ft::vector<int> vec;
+	std::vector<int> ve(10, 2);
+	ft::vector<int> v(ve.begin(), ve.end());
+	ft::vector<int> vec(v);
+
+	for (int i = 0; i < 11; i++)
+		std::cout << i << " : " << vec[i] << std::endl;
 	return (0);
 }
 
