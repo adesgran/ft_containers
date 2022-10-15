@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:24:36 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/17 02:04:04 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/15 21:51:24 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,6 @@ namespace ft
 			typedef const T&							reference;
 			typedef ft::random_access_iterator_tag		iterator_category;
 	};
-}
+};
 
 #endif

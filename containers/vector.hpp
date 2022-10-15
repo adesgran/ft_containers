@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/15 19:05:58 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/16 00:06:53 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@
 namespace ft
 {
 	template <bool Cond, class Res1, class Res2> class Ternary;
-	template <class Res1, class Res2> class Ternary <0, Res1, Res2 >
-	{ typedef Res2 type; };
-	template <class Res1, class Res2> class Ternary <1, Res1, Res2 >
-	{ typedef Res1 type; };
+	template <class Res1, class Res2> class Ternary <false, Res1, Res2 >
+	{ public : typedef Res2 type; };
+	template <class Res1, class Res2> class Ternary <true, Res1, Res2 >
+	{ public : typedef Res1 type; };
 
 	template < class T, class Alloc = std::allocator<T> >
 		class vector
@@ -42,16 +42,16 @@ namespace ft
 				{
 
 					public:
-						typedef	ft::random_access_iterator_tag	iterator_category;
-						typedef	Ternary<Const, const T, T>		value_type;
-						typedef	ptrdiff_t						difference_type;
-						typedef	value_type*						pointer;
-						typedef	value_type&						reference;
-						typedef	vecIterator						iterator;
+						typedef	ft::random_access_iterator_tag				iterator_category;
+						typedef	typename Ternary<Const, const T, T>::type	value_type;
+						typedef	ptrdiff_t									difference_type;
+						typedef	value_type*									pointer;
+						typedef	value_type&									reference;
+						typedef	vecIterator									iterator;
 
 						vecIterator() : _ptr(NULL) {};
-						vecIterator(pointer ptr) : _ptr(ptr) {};
-						vecIterator(const vecIterator<Const> &it) : _ptr(it._ptr) {};
+						vecIterator(pointer const ptr) : _ptr(ptr) {};
+						//vecIterator(const vecIterator<Const> &it) : _ptr(it._ptr) {};
 						~vecIterator() {};
 
 						pointer	getPtr(void) const {return (_ptr);};
@@ -96,6 +96,7 @@ namespace ft
 				typedef	size_t										size_type;
 
 
+				//////////CONSTRUCTORS//////////
 				explicit vector (const allocator_type& alloc = allocator_type())
 				{
 					_alloc = alloc;
@@ -109,7 +110,8 @@ namespace ft
 				explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
 				{
 					_alloc = alloc;
-					_capacity = _required_capacity(n);
+					//_capacity = _required_capacity(n);
+					_capacity = n;
 					_size = n;
 					_begin = _alloc.allocate(_capacity);
 					for (size_type i = 0; i < n; i++)
@@ -153,23 +155,104 @@ namespace ft
 						(*this)[n] = cpy[n];
 				};
 
-				~vector( void )
+				vector &operator=( const vector &cpy)
 				{
+					if (_begin)
+						_alloc.dealloc(_begin, _capacity);
+					_alloc = cpy._alloc;
+					_capacity = cpy._capacity;
+					_size = cpy._size;
+					_begin = _alloc.allocate(_capacity);
 
-				};
-
-				vector &operator=( const vector &vector )
-				{
-					this->_begin = iterator(vector._begin);
+					for (size_type n = 0; n < _size; n++)
+						(*this)[n] = cpy[n];
 					return (*this);
 				};
 
+				//////////DESTRUCTOR//////////
+				~vector( void )
+				{
+					_alloc.deallocate(_begin, _capacity);
+				};
+
+				//////////ITERATORS///////////
+				iterator		begin() { return (iterator(_begin));};
+				const_iterator	begin() const { return (const_iterator(_begin));};
+				iterator		end() { return (iterator(_begin + _size));};
+				const_iterator	end() const { return (const_iterator(_begin + _size));};
+						
+				reverse_iterator		rbegin() { return (reverse_iterator(_begin + _size));};
+				const_reverse_iterator	rbegin() const { return (const_reverse_iterator(_begin + _size));};
+				reverse_iterator		rend() { return (reverse_iterator(_begin));};
+				const_reverse_iterator	rend() const { return (const_reverse_iterator(_begin));};
+
+				//////////CAPACITY//////////
+				size_type	size() const {return (_size);};
+				size_type	max_size() const {return (_alloc.max_size());};
+				void		resize(size_type n, value_type val = value_type()) {
+					if (n == _size || n > this->max_size())
+						return ;
+					if (n < _size)
+					{
+						for (size_type s = n; s < _size; s++)
+							(*this)[s] = value_type();
+						_size = n;
+					}
+					else if (n <= _capacity)
+					{
+						for (size_type s = _size; s < n; s++)
+							(*this)[s] = val;
+						_size = n;
+					}
+					else
+					{
+						pointer	res = _alloc.allocate(n);
+						pointer	tmp = res;
+						size_t	s = 0;
+						while (s < _size)
+						{
+							*tmp = (*this)[s];
+							tmp++;
+							s++;
+						}
+						while (s < n)
+						{
+							*tmp = val;
+							tmp++;
+							s++;
+						}
+						_alloc.deallocate(_begin, _capacity);
+						_begin = res;
+						_size = n;
+						_capacity = n;
+					}
+				}
+				size_type	capacity() const {return (_capacity);};
+				bool		empty() const { return (_size == 0);};
+				void		reserve(size_type n)
+				{
+					if (n > _capacity)
+					{
+						pointer	res = _alloc.allocate(n);
+						pointer	tmp = res;
+						for (size_type s = 0; s < _size; s++)
+						{
+							*tmp = (*this)[s];
+							tmp++;
+						}
+						_alloc.deallocate(_begin, _capacity);
+						_begin = res;
+						_capacity = n;
+					}
+				}
+
+				//////////ELEMENT ACCESS//////////
 				reference	operator[](size_type n) const {return (_begin[n]);};
 
 
 			private:
 				allocator_type	_alloc;
-				pointer _begin;
+				pointer			_begin;
 				size_type		_size;
 				size_type		_capacity;
 				
@@ -183,6 +266,8 @@ namespace ft
 					}
 					return (min);
 				}
+
+				//bool	_is_
 		};
 }
 
