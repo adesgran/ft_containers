@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/16 00:06:53 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/16 00:40:42 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include "utils/reverse_iterator.hpp"
 # include "utils/enable_if.hpp"
 # include "utils/is_integral.hpp"
+# include "utils/utils.hpp"
 
 namespace ft
 {
@@ -247,7 +248,26 @@ namespace ft
 				}
 
 				//////////ELEMENT ACCESS//////////
-				reference	operator[](size_type n) const {return (_begin[n]);};
+				reference		operator[](size_type n) {return (_begin[n]);};
+				const_reference	operator[](size_type n) const {return (_begin[n]);};
+				reference		at(size_type n) 
+				{ 
+					if (n >= _size)
+						throw std::out_of_range("vector::_M_range_check: __n (which is " + ft::to_string(n) + ") >= this->size() (which is " + ft::to_string(_size) + ")");
+					return ((*this)[n]);
+				};
+				const_reference	at(size_type n) const
+				{ 
+					if (n >= _size)
+						throw std::out_of_range("vector::_M_range_check: __n (which is " + ft::to_string(n) + ") >= this->size() (which is " + ft::to_string(_size) + ")");
+					return ((*this)[n]);
+				};
+				reference		front() { return (*_begin);};
+				const_reference	front() const { return (*_begin);};
+				reference		back() { return ((_size > 1) ? (*this)[_size - 1] : *_begin);};
+				const_reference	back() const { return ((_size > 1) ? (*this)[_size - 1] : *_begin);};
+				pointer			data() { return (_begin);};
+				const_pointer	data() const { return (_begin);};
 
 
 			private:

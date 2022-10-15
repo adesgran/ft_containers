@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/16 00:07:03 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/16 00:36:57 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,18 @@ int main(void)
 	vec.reserve(20);
 	std::cout << "Capacity : " << vec.capacity() << std::endl;
 
+	vec.back() = 3;
 	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
 		std::cout << *it << std::endl;
+	try
+	{
+		vec.at(50);
+	}
+	catch (std::exception & s)
+	{
+		std::cout << s.what() << std::endl;
+	}
+	std::cout << "Front : " << vec.front() << std::endl << "Back : " << vec.back() << std::endl;
 	return (0);
 }
 
