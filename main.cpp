@@ -6,20 +6,22 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 13:45:20 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 14:56:35 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <typeinfo>
-# include <vector>
-# include <iterator>
+#include <vector>
+#include <iterator>
+#include <map>
 
 #ifdef STL
 	namespace ft = std;
 # else
 # include <stack.hpp>
 # include <vector.hpp>
+# include <map.hpp>
 # include "containers/utils/iterator_traits.hpp"
 # include "containers/utils/iterator_tag.hpp"
 # include "containers/utils/reverse_iterator.hpp"
@@ -32,7 +34,15 @@
 # include "containers/utils/iterator.hpp"
 #endif
 
-int main(void)
+
+int main(void) //MAP
+{
+	ft::map<std::string, int> mp;
+	return (0);
+}
+
+/*
+int main(void) //VECTOR
 {
 	ft::vector<int> tmp(5, 4);
 	ft::vector<int> vec(10, 3);
@@ -166,4 +176,4 @@ int main(void)
 	std::cout << "Capacity : " << vec.capacity() << std::endl;
 	return (0);
 }
-
+*/
