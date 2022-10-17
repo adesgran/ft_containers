@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 12:41:25 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 13:45:05 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,7 +298,7 @@ namespace ft
 					if (_size == _capacity)
 					{
 						vector tmp(*this);
-						*this = vector(_capacity * 2);
+						*this = (_capacity == 0) ? vector(1) : vector(_capacity * 2);
 						*this = tmp;
 					}
 					(*this)[_size] = val;
@@ -318,7 +318,7 @@ namespace ft
 					if (_size == _capacity)
 					{
 						vector tmp(*this);
-						*this = vector(_capacity * 2);
+						*this = (_capacity == 0) ? vector(1) : vector(_capacity * 2);
 						*this = tmp;
 					}
 					iterator	tmp = this->end();
@@ -345,7 +345,53 @@ namespace ft
 						tmp = this->insert(tmp, *it);
 				};
 
+				iterator erase (iterator position)
+				{
+					for (iterator it = position; it < this->end() - 1; it++)
+						*it = *(it + 1);
+					*(this->end() - 1) = value_type();
+					_size--;
+					return (position);
+				};
+				iterator erase (iterator first, iterator last)
+				{
+					size_type	n = last - first;
+					for (iterator it = first; it < this->end(); it++)
+					{
+						if (it + n < this->end().getPtr())
+							*it = *(it + n);
+						else
+							*it = value_type();
+					}
+					_size -= n;
+					return (first);
 
+				};
+
+				void swap (vector& x)
+				{
+					allocator_type	talloc = x._alloc;
+					pointer			tbegin = x._begin;
+					size_type		tsize = x._size;
+					size_type		tcapacity = x._capacity;
+
+					x._alloc = _alloc;
+					x._begin = _begin;
+					x._size = _size;
+					x._capacity = _capacity;
+
+					_alloc = talloc;
+					_begin = tbegin;
+					_size = tsize;
+					_capacity = tcapacity;
+				}
+
+				void clear()
+				{
+					for (iterator it = this->begin(); it < this->end(); it++)
+						*it = value_type();
+					_size = 0;
+				};
 
 
 			private:

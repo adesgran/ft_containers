@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 12:42:45 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 13:45:20 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,51 @@ int main(void)
 
 	std::vector<int> ttt(10, 54);
 	vec.insert(vec.begin() + 3, ttt.begin(), ttt.end());
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	vec.erase(vec.begin() + 3);
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	vec.erase(vec.begin() + 3, vec.begin() + 26);
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	ft::vector<int> swp(12, 13);
+	vec.swap(swp);
+
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	for (ft::vector<int>::iterator it = swp.begin(); it < swp.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << swp.size() << std::endl;
+	std::cout << "Max Size : " << swp.max_size() << std::endl;
+	std::cout << "Capacity : " << swp.capacity() << std::endl;
+
+	vec.clear();
+
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	vec.push_back(12);
+
 	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
 		std::cout << *it << std::endl;
 	std::cout << "Size : " << vec.size() << std::endl;
