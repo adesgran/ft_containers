@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 12:05:20 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 12:42:45 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,23 @@ int main(void)
 	vec.push_back(11);
 	vec.push_back(11);
 	vec.pop_back();
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	ft::vector<int>::iterator it_tmp = vec.insert(vec.begin() + 21, 42);
+	std::cout << "New it : " << *it_tmp << std::endl;
+	vec.insert(vec.end() - 1 ,5, 12);
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	std::vector<int> ttt(10, 54);
+	vec.insert(vec.begin() + 3, ttt.begin(), ttt.end());
 	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
 		std::cout << *it << std::endl;
 	std::cout << "Size : " << vec.size() << std::endl;

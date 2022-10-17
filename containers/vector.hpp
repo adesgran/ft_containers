@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 12:04:43 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 12:41:25 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,40 @@ namespace ft
 						(*this)[_size - 1] = value_type();
 						_size--;
 					}
-				}
+				};
+
+				iterator insert (iterator position, const value_type& val) //NEED TO SEGFAULT IF (POSITION ++ THIS->END())
+				{
+					if (_size == _capacity)
+					{
+						vector tmp(*this);
+						*this = vector(_capacity * 2);
+						*this = tmp;
+					}
+					iterator	tmp = this->end();
+					while (tmp > position)
+					{
+						*tmp = *(tmp - 1);
+						tmp--;
+					}
+					*position = val;
+					_size++;
+					return (position);
+				};
+				void insert (iterator position, size_type n, const value_type& val)
+				{
+					iterator	tmp = position;
+					for (size_type s = 0; s < n && tmp != iterator(); s++)
+						tmp = this->insert(tmp, val);
+				};
+				template <class InputIterator>    void insert (iterator position, InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+				{
+					iterator	tmp = position;
+					for (InputIterator it = first; it < last; it++)
+						tmp = this->insert(tmp, *it);
+				};
+
 
 
 

@@ -22,9 +22,9 @@ ${NAME}: ${O_FILES}
 	@echo "\n\033[0;34mCompiling ${NAME}_stl...\033[0m\n"
 	@${CC} stl_main.o -o "${NAME}_stl"
 	@echo "-----FT-----"
-	@./${NAME}
+	@./${NAME} 2>>log_error
 	@echo "\n-----STL-----"
-	@./${NAME}_stl
+	@./${NAME}_stl 2>>log_error
 	@./${NAME} > _diff_ft
 	@echo "\n-----DIFF-----"
 	@./${NAME}_stl > _diff_stl
