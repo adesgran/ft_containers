@@ -6,17 +6,17 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/16 00:36:57 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 12:05:20 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <typeinfo>
+# include <vector>
+# include <iterator>
 
 #ifdef STL
 	namespace ft = std;
-# include <vector>
-# include <iterator>
 # else
 # include <stack.hpp>
 # include <vector.hpp>
@@ -34,7 +34,9 @@
 
 int main(void)
 {
+	ft::vector<int> tmp(5, 4);
 	ft::vector<int> vec(10, 3);
+	vec = tmp;
 
 	vec[0] = 1;
 	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end(); it++)
@@ -62,6 +64,44 @@ int main(void)
 		std::cout << s.what() << std::endl;
 	}
 	std::cout << "Front : " << vec.front() << std::endl << "Back : " << vec.back() << std::endl;
+
+	std::vector<int> vec2(2,4);
+	
+	vec.assign(vec2.begin(), vec2.end());
+
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	std::vector<int> vec3(20,5);
+	
+	vec.assign(vec3.begin(), vec3.end());
+
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	vec.assign(7, 12);
+
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
+
+	vec.assign(20, 20);
+	vec.push_back(11);
+	vec.push_back(11);
+	vec.pop_back();
+	for (ft::vector<int>::iterator it = vec.begin(); it < vec.end() ; it++)
+		std::cout << *it << std::endl;
+	std::cout << "Size : " << vec.size() << std::endl;
+	std::cout << "Max Size : " << vec.max_size() << std::endl;
+	std::cout << "Capacity : " << vec.capacity() << std::endl;
 	return (0);
 }
 

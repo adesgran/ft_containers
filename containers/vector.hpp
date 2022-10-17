@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/16 00:40:42 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 12:04:43 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,15 +124,16 @@ namespace ft
 				{
 					_alloc = alloc;
 
-					InputIterator first_cpy = first;
-					size_type n = 0;
-					while (first_cpy < last)
+					if (last <= first)
 					{
-						n++;
-						first_cpy++;
+						_size = 0;
+						_capacity = 0;
+						_begin = NULL;
+						return ;
 					}
+					size_type n = last - first;
 
-					_capacity = _required_capacity(n);
+					_capacity = n;
 					_size = n;
 					_begin = _alloc.allocate(_capacity);
 					pointer _begin_cpy = _begin;
@@ -156,17 +157,26 @@ namespace ft
 						(*this)[n] = cpy[n];
 				};
 
-				vector &operator=( const vector &cpy)
+				vector &operator=( const vector &cpy )
 				{
-					if (_begin)
-						_alloc.dealloc(_begin, _capacity);
-					_alloc = cpy._alloc;
-					_capacity = cpy._capacity;
-					_size = cpy._size;
-					_begin = _alloc.allocate(_capacity);
+					if (cpy._size > _capacity)
+					{
+						if (_begin)
+							_alloc.deallocate(_begin, _capacity);
+						_alloc = cpy._alloc;
+						_capacity = cpy._size;
+						_size = cpy._size;
+						_begin = _alloc.allocate(_capacity);
 
-					for (size_type n = 0; n < _size; n++)
-						(*this)[n] = cpy[n];
+						for (size_type n = 0; n < _size; n++)
+							(*this)[n] = cpy[n];
+					}
+					else
+					{
+						_size = cpy._size;
+						for (size_type n = 0; n < _size; n++)
+							(*this)[n] = cpy[n];
+					}
 					return (*this);
 				};
 
@@ -269,6 +279,41 @@ namespace ft
 				pointer			data() { return (_begin);};
 				const_pointer	data() const { return (_begin);};
 
+				//////////MODIFIERS//////////
+				template <class InputIterator>  void assign (InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+				{
+					vector tmp(first, last);
+					tmp._alloc = _alloc;
+					*this = tmp;
+				};
+				void assign (size_type n, const value_type& val)
+				{
+					vector tmp(n, val, _alloc);
+					*this = tmp;
+				};
+
+				void push_back (const value_type& val)
+				{
+					if (_size == _capacity)
+					{
+						vector tmp(*this);
+						*this = vector(_capacity * 2);
+						*this = tmp;
+					}
+					(*this)[_size] = val;
+					_size++;
+				};
+				void	pop_back ( void )
+				{
+					if (_size)
+					{
+						(*this)[_size - 1] = value_type();
+						_size--;
+					}
+				}
+
+
 
 			private:
 				allocator_type	_alloc;
@@ -276,18 +321,7 @@ namespace ft
 				size_type		_size;
 				size_type		_capacity;
 				
-				size_type	_required_capacity(size_type size, size_type min = 1)
-				{
-					if (size == 0)
-						return (0);
-					while (min < size)
-					{
-						min *= 2;
-					}
-					return (min);
-				}
 
-				//bool	_is_
 		};
 }
 
