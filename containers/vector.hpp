@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 13:45:05 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 15:05:20 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -392,6 +392,10 @@ namespace ft
 						*it = value_type();
 					_size = 0;
 				};
+				 
+				//////////ALLOCATOR//////////
+				allocator_type get_allocator() const {return (_alloc);};
+
 
 
 			private:

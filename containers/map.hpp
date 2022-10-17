@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 14:56:00 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 16:57:41 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft
 
 			public :
 				template <bool Const = false>
-					class mapIterator
+					class mapIterator  //RB Tree
 					{
 
 						public:
@@ -50,8 +50,9 @@ namespace ft
 							typedef	value_type*									pointer;
 							typedef	value_type&									reference;
 							typedef	mapIterator									iterator;
+							enum	color_t										{BLACK, RED};
 
-							mapIterator() : _ptr(NULL) {};
+							mapIterator() : _ptr(NULL), _parent(NULL), _color(RED) {_child[0] = NULL; _child[1] = NULL;};
 							mapIterator(pointer const ptr) : _ptr(ptr) {};
 							//mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
 							~mapIterator() {};
@@ -71,7 +72,10 @@ namespace ft
 							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
 
 						private:
-							pointer	_ptr;
+							pointer			_ptr;
+							pointer			_parent;
+							pointer			_child[2];
+							enum color_t	_color;
 					};
 
 				typedef	Key											key_type;
