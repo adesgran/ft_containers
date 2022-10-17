@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 18:35:47 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/03 17:53:30 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/17 10:50:40 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,16 +73,16 @@ namespace ft
 
 	template <size_t I, class Tpl> class tuple_element;
 
-	template <class T1, class T2> struct tuple_element <0, ft::pair<T1,T2> >
+	template <class T1, class T2> class tuple_element <0, ft::pair<T1,T2> >
 	{ typedef T1 type; };
 
-	template <class T1, class T2> struct tuple_element <1, ft::pair<T1,T2> >
+	template <class T1, class T2> class tuple_element <1, ft::pair<T1,T2> >
 	{ typedef T2 type; };
 
 	template <class Tpl> class tuple_size;
 
 	template <class T1, class T2>
-		struct tuple_size< pair<T1,T2> > : integral_constant<size_t,2> {};
+		class tuple_size< pair<T1,T2> > : integral_constant<size_t,2> {};
 
 	template <size_t I>
 		struct _pair_get;
