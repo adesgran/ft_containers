@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 16:57:41 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/26 12:27:32 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,47 @@ namespace ft
 		bool operator() (const T& x, const T& y) const {return x<y;}
 	};
 
+
 	template < class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 		class map
 		{
+			private :
+				typedef struct s_node
+				{
+					ft::pair<const Key, T>	content;
+					bool					isRed;
+					struct s_node			*parent;
+					struct s_node			*right;
+					struct s_node			*left;
+
+					s_node (ft::pair<const Key, T> content) : content(content), isRed(true), parent(NULL), right(NULL), left(NULL) {};
+
+					s_node	root ( void )
+					{
+						s_node	*res = this;
+						while (res->parent)
+							res = res->parent;
+						return (res);
+					};
+
+					s_node	*max( void ) 
+					{
+						s_node	*res = root();
+						while (res->right)
+							res = res->right;
+						return (res);
+					};
+
+					s_node	*min( void ) 
+					{
+						s_node	*res = root();
+						while (res->left)
+							res = res->left;
+						return (res);
+					};
+				}	node;
+				typedef	node*	node_pointer;
+				typedef node&	node_reference;
 
 			public :
 				template <bool Const = false>
@@ -50,11 +88,10 @@ namespace ft
 							typedef	value_type*									pointer;
 							typedef	value_type&									reference;
 							typedef	mapIterator									iterator;
-							enum	color_t										{BLACK, RED};
 
-							mapIterator() : _ptr(NULL), _parent(NULL), _color(RED) {_child[0] = NULL; _child[1] = NULL;};
+							mapIterator() : _ptr(NULL) {};
 							mapIterator(pointer const ptr) : _ptr(ptr) {};
-							//mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
+							mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
 							~mapIterator() {};
 
 							pointer	getPtr(void) const {return (_ptr);};
@@ -72,10 +109,11 @@ namespace ft
 							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
 
 						private:
-							pointer			_ptr;
-							pointer			_parent;
-							pointer			_child[2];
-							enum color_t	_color;
+							node_pointer			_ptr;
+							
+						void	node_next ( void )
+							{
+							};
 					};
 
 				typedef	Key											key_type;
@@ -111,8 +149,59 @@ namespace ft
 				typedef typename iterator::difference_type			difference_type;
 				typedef	size_t										size_type;
 
+			public :
 				map() {};
 				~map() {};
+
+			private :
+				node_pointer	_begin;
+
+				node_pointer	insert_node( node_pointer nde )
+				{
+					node_pointer	tmp = _begin;
+					while (1)
+					{
+						if (*nde == *tmp)
+							return (tmp);
+						else if (*nde > *tmp)
+						{
+							if (tmp->rigth)
+								tmp = tmp->right;
+							else
+							{
+								tmp->right = nde;
+								break;
+							}
+						}
+						else	
+						{
+							if (tmp->left)
+								tmp = tmp->left;
+							else
+							{
+								tmp->left= nde;
+								break;
+							}
+						}
+					}
+					return (nde);
+				};
+
+				void	rrotate_node( node_pointer nde )
+				{
+					node_pointer z = nde->parent, y = nde->left, x = nde, b = nde->left->right; //need to test if nde->left is NULL
+
+					if (z)
+						z->right = y;
+					else
+						_begin = y;
+					y->right = x;
+					x->left = b;
+				};
+
+				//void	lrotate_node( node_pointer nde )
+				//{
+					//node _pointer z = nde, y = nde->right
 		};
 };
 

@@ -30,6 +30,8 @@ ${NAME}: ${O_FILES}
 	@./${NAME}_stl > _diff_stl
 	@diff _diff_ft _diff_stl
 	@rm -f _diff_ft _diff_stl
+	@echo "\n-----ERROR-----"
+	@cat log_error
 	@echo
 
 test:

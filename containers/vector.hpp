@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/17 15:05:20 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/10/26 10:47:54 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,6 @@
 
 namespace ft
 {
-	template <bool Cond, class Res1, class Res2> class Ternary;
-	template <class Res1, class Res2> class Ternary <false, Res1, Res2 >
-	{ public : typedef Res2 type; };
-	template <class Res1, class Res2> class Ternary <true, Res1, Res2 >
-	{ public : typedef Res1 type; };
 
 	template < class T, class Alloc = std::allocator<T> >
 		class vector
