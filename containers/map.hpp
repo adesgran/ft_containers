@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/15 14:54:00 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/15 15:59:58 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,11 +153,38 @@ namespace ft
 				typedef	size_t										size_type;
 
 			public :
-				map() {};
+				map() : _begin(NULL) {};
 				~map() {};
+
+				void	print(void) {
+					if (_begin) {
+						printHelper(_begin, "", true);
+					}
+				};
 
 			private :
 				node_pointer	_begin;
+
+				void	printHelper(node_pointer root, std::string indent, bool last)
+				{
+					if (root)
+					{
+						std::cout << indent;
+						if (last) {
+							std::cout << "R----";
+							indent += "   ";
+						}
+						else
+						{
+							std::cout << "L----";
+							indent += "|  ";
+						}
+						std::string sColor = root->color == RED ? "RED" : "BLACK";
+						std::cout << root->content.first << "(" << sColor << ")" << std::endl;
+						printHelper(root->left, indent, false);
+						printHelper(root->right, indent, true);
+					}
+				};
 
 				node_pointer	insert_node( node_pointer nde )
 				{

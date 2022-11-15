@@ -22,7 +22,7 @@ ${NAME}: ${O_FILES}
 	@echo "\n\033[0;34mCompiling ${NAME}_stl...\033[0m\n"
 	@${CC} stl_main.o -o "${NAME}_stl"
 	@echo "-----FT-----"
-	@./${NAME} 2>>log_error
+	@./${NAME} 2>log_error
 	@echo "\n-----STL-----"
 	@./${NAME}_stl 2>>log_error
 	@./${NAME} > _diff_ft
@@ -33,6 +33,17 @@ ${NAME}: ${O_FILES}
 	@echo "\n-----ERROR-----"
 	@cat log_error
 	@echo
+
+one: fclean
+	@printf "\033[0;33mGenerating ${NAME} objects... %-33.33s\033[0m" $@
+	@${CC} ${C_FLAGS} ${INCLUDES} -c main.cpp -o main.o
+	@echo "\n\n\033[0;34mCompiling ${NAME}...\033[0m"
+	@${CC} main.o -o ${NAME}
+	@echo "-----FT-----"
+	@./${NAME} 2>log_error
+	@echo "\n-----ERROR-----"
+	@cat log_error
+	@rm -f _diff_ft
 
 test:
 	@${CC} test.cpp -o a.out
