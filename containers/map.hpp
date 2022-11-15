@@ -6,12 +6,15 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/26 12:27:32 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/15 14:54:00 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_HPP
 # define MAP_HPP
+
+# define RED 101
+# define BLACK 42
 
 # include "utils/pair.hpp"
 # include "utils/iterator_traits.hpp"
@@ -42,12 +45,12 @@ namespace ft
 				typedef struct s_node
 				{
 					ft::pair<const Key, T>	content;
-					bool					isRed;
+					int						color;
 					struct s_node			*parent;
 					struct s_node			*right;
 					struct s_node			*left;
 
-					s_node (ft::pair<const Key, T> content) : content(content), isRed(true), parent(NULL), right(NULL), left(NULL) {};
+					s_node (ft::pair<const Key, T> content) : content(content), color(BLACK), parent(NULL), right(NULL), left(NULL) {};
 
 					s_node	root ( void )
 					{
@@ -189,19 +192,90 @@ namespace ft
 
 				void	rrotate_node( node_pointer nde )
 				{
-					node_pointer z = nde->parent, y = nde->left, x = nde, b = nde->left->right; //need to test if nde->left is NULL
-
+					if (!nde->left)
+						return ;
+					node_pointer z = nde->parent;
+					node_pointer y = nde->left;
+					node_pointer x = nde;
+					node_pointer b = nde->left->right;
 					if (z)
-						z->right = y;
+					{
+						if (z->left == x)
+							z->left = y;
+						else
+							z->right = y;
+					}
 					else
 						_begin = y;
 					y->right = x;
 					x->left = b;
+					if (b)
+						b->parent = x;
+					x->parent = y;
+					y->parent = z;
 				};
 
-				//void	lrotate_node( node_pointer nde )
-				//{
-					//node _pointer z = nde, y = nde->right
+				void	lrotate_node( node_pointer nde )
+				{
+					if (!nde->right)
+						return ;
+					node_pointer z = nde->parent;
+					node_pointer y = nde->right;
+					node_pointer x = nde;
+					node_pointer b = nde->right->left;
+					if (z)
+					{
+						if (z->left == x)
+							z->left = y;
+						else
+							z->right = y;
+					}
+					else
+						_begin = y;
+					y->left = x;
+					x->right = b;
+					if (b)
+						b->parent = x;
+					x->parent = y;
+					y->parent = z;
+				};
+
+				void	lrrotate_node( node_pointer nde )
+				{
+					rrotate_node(nde->left);
+					lrotate(nde);
+				};
+
+				void	rlrotate_node( node_pointer nde )
+				{
+					lrotate_node(nde->right);
+					rrotate(nde);
+				};
+
+				bool	check_tree( node_pointer nde, int &depth)
+				{
+					if (!nde)
+						return true;
+					if (!nde->parent && nde->color != BLACK)
+						return false;
+					if (nde->color == RED)
+					{
+						if ((nde->left && nde->left->color == RED) || (nde->right && nde->right->color == RED))
+							return false;
+					}
+					else if (nde->color == BLACK)
+						depth++;
+					else
+						return false;
+
+
+					int d1 = depth;
+					int d2 = depth;
+					if ( !check_tree(nde->left, d1) || !check_tree(nde->right, d2) || d1 != d2)
+						return false;
+					depth = d1;
+					return true;
+				};
 		};
 };
 
