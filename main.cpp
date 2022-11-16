@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/15 15:55:38 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/16 14:59:51 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@
 int main(void) //MAP
 {
 	ft::map<std::string, int> mp;
+	ft::pair<std::string, int> pizz ("Pizza", 2);
+	mp.insert(pizz);
 	mp.print();
 	return (0);
 }

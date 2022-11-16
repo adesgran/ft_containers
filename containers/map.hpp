@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/15 16:47:04 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/16 14:59:33 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ namespace ft
 			private :
 				typedef struct s_node
 				{
-					ft::pair<const Key, T>	content;
+					ft::pair<const Key, T>	*content;
 					int						color;
 					struct s_node			*parent;
 					struct s_node			*right;
 					struct s_node			*left;
 
-					s_node (ft::pair<const Key, T> content) : content(content), color(BLACK), parent(NULL), right(NULL), left(NULL) {};
+					s_node (ft::pair<const Key, T> *content) : content(content), color(BLACK), parent(NULL), right(NULL), left(NULL) {};
 
 					s_node	root ( void )
 					{
@@ -80,13 +80,17 @@ namespace ft
 				typedef node&	node_reference;
 
 			public :
+				typedef	Key											key_type;
+				typedef	T											mapped_type;
+				typedef	ft::pair<const key_type, mapped_type>		value_type;
+				typedef	Compare										key_compare;
 				template <bool Const = false>
 					class mapIterator  //RB Tree
 					{
 
 						public:
 							typedef	ft::bidirectional_iterator_tag				iterator_category;
-							typedef	typename Ternary<Const, const T, T>::type	value_type;
+							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
 							typedef	ptrdiff_t									difference_type;
 							typedef	value_type*									pointer;
 							typedef	value_type&									reference;
@@ -113,16 +117,8 @@ namespace ft
 
 						private:
 							node_pointer			_ptr;
-							
-						void	node_next ( void )
-							{
-							};
 					};
 
-				typedef	Key											key_type;
-				typedef	T											mapped_type;
-				typedef	ft::pair<const key_type, mapped_type>		value_type;
-				typedef	Compare										key_compare;
 
 				class value_compare
 				{
@@ -153,17 +149,54 @@ namespace ft
 				typedef	size_t										size_type;
 
 			public :
-				map() : _begin(NULL) {};
+				map() {
+					_alloc = allocator_type();
+					_capacity = 10;
+					_size = 0;
+					_begin = _alloc.allocate(_capacity);
+					_node_alloc = std::allocator<node>();
+					_root = NULL;
+
+				};
 				~map() {};
 
 				void	print(void) {
 					if (_begin) {
-						printHelper(_begin, "", true);
+						printHelper(_root, "", true);
 					}
 				};
 
+				//////////MODIFIERS//////////
+
+				reference		operator[](size_type n) {return (_begin[n]);};
+				ft::pair<iterator, bool> insert( const value_type & val )
+				{
+					//if (_size == _capacity)
+					//{
+						//map tmp(*this);
+						//*this = (_capacity == 0) ? map(1) : map(_capacity * 2);
+						//*this = tmp;
+					//}
+
+					reference ref = (*this)[_size];
+					pointer	addr = &(*this)[_size];
+					_size++;
+					ref = val;
+					node_pointer	new_node = new node(addr);
+					_root = insert_node(new_node);
+					return (ft::pair<iterator, bool>(iterator(addr), true));
+
+				};
+
 			private :
-				node_pointer	_begin;
+				pointer			_begin;
+				allocator_type	_alloc;
+				size_type		_size;
+				size_type		_capacity;
+				node_pointer	_root;
+				allocator_type	_node_alloc;
+				
+				
 
 				void	printHelper(node_pointer root, std::string indent, bool last)
 				{
@@ -180,7 +213,7 @@ namespace ft
 							indent += "|  ";
 						}
 						std::string sColor = root->color == RED ? "RED" : "BLACK";
-						std::cout << root->content.first << "(" << sColor << ")" << std::endl;
+						std::cout << root->content->first << "(" << sColor << ")" << std::endl;
 						printHelper(root->left, indent, false);
 						printHelper(root->right, indent, true);
 					}
@@ -188,33 +221,49 @@ namespace ft
 
 				node_pointer	insert_node( node_pointer nde )
 				{
-					node_pointer	tmp = _begin;
+					node_pointer	x;
+					node_pointer	y;
+
+					y = _begin;
+					x = NULL;
+					if (!y)
+					{
+						_begin = nde;
+						nde->color = BLACK;
+						return (nde);
+					}
 					while (1)
 					{
-						if (*nde == *tmp)
-							return (tmp);
-						else if (*nde > *tmp)
+						if (*nde == *y) //PARTICULAR CASE, TO SEE
+							return (y);
+						else if (*nde < *y)
 						{
-							if (tmp->rigth)
-								tmp = tmp->right;
+							if (y->right)
+							{
+								x = y;
+								y = x->right;
+							}
 							else
 							{
-								tmp->right = nde;
+								y->right = nde;
 								break;
 							}
 						}
-						else	
+						else
 						{
-							if (tmp->left)
-								tmp = tmp->left;
+							if (y->left)
+							{
+								x = y;
+								y = x->left;
+							}
 							else
 							{
-								tmp->left= nde;
+								y->left = nde;
 								break;
 							}
 						}
 					}
-					return (nde);
+					return (_root);
 				};
 
 				void	rrotate_node( node_pointer nde )
