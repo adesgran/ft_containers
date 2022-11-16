@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/16 14:59:33 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/16 15:51:24 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ namespace ft
 							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
 
 						private:
-							node_pointer			_ptr;
+							pointer			_ptr;
 					};
 
 
@@ -178,7 +178,7 @@ namespace ft
 						//*this = tmp;
 					//}
 
-					reference ref = (*this)[_size];
+					reference ref(*this)[_size];
 					pointer	addr = &(*this)[_size];
 					_size++;
 					ref = val;
@@ -224,19 +224,19 @@ namespace ft
 					node_pointer	x;
 					node_pointer	y;
 
-					y = _begin;
+					y = _root;
 					x = NULL;
 					if (!y)
 					{
-						_begin = nde;
+						_root = nde;
 						nde->color = BLACK;
 						return (nde);
 					}
 					while (1)
 					{
-						if (*nde == *y) //PARTICULAR CASE, TO SEE
-							return (y);
-						else if (*nde < *y)
+						//if (*nde == *y) //PARTICULAR CASE, TO SEE
+							//return (y);
+						if (nde->content < y->content)
 						{
 							if (y->right)
 							{

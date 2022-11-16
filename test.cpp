@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:18:08 by adesgran          #+#    #+#             */
-/*   Updated: 2022/09/17 00:22:06 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/16 16:22:02 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,24 @@
 #include <iterator>     // std::iterator_traits
 #include <typeinfo>     // typeid
 #include <vector>
+#include <map>
 
 int main() {
-  typedef std::iterator_traits<std::vector<int>*> traits;
-  if (typeid(traits::iterator_category)==typeid(std::random_access_iterator_tag))
-    std::cout << "int* is a random-access iterator" << std::endl;
-  if (typeid(traits::iterator_category)==typeid(std::forward_iterator_tag))
-    std::cout << "int* is a forward-access iterator" << std::endl;
+	std::map<std::string, int> m;
+	m.insert(std::pair<std::string, int>("Pizza", 2));	
+	m.insert(std::pair<std::string, int>("Pizza2", 2));	
+	m.insert(std::pair<std::string, int>("Aizza", 2));	
+	//for (std::map<std::string, int>::iterator it = m.begin(); it < m.end(); it++)
+		//std::cout << it->first << std::endl;
+	try
+	{
+		std::cout << m.begin()->first <<  std::endl;
+	}
+	catch (std::exception const & e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+
+	
   return 0;
 }

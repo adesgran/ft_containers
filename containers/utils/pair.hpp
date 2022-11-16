@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 18:35:47 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/16 14:52:47 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/16 15:36:43 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft
 			a = b;
 			b = c;
 		}
-		pair	&operator=(const pair &pr) {this->first = (const T1)pr.first; this->second = (T2)pr.second; return (*this);};
+		pair	&operator=(const pair &pr) {this->first = (T1)pr.first; this->second = (T2)pr.second; return (*this);};
 		void	swap(pair &pr){
 			swap(first,pr.first);
 			swap(second,pr.second);
