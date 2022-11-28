@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 08:00:41 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 08:16:40 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,28 @@ namespace ft
 				typedef	T											mapped_type;
 				typedef	ft::pair<const key_type, mapped_type>		value_type;
 				typedef	Compare										key_compare;
+
+
+				class value_compare
+				{
+					friend class map;
+					public:
+						typedef	bool		result_type;
+						typedef	value_type	first_argument_type;
+						typedef	value_type	second_argument_type;
+
+						bool	operator()( const value_type& lhs, const value_type& rhs ) const
+						{
+							return ( comp( lhs.first, rhs.first ) );
+						}
+
+					protected:
+						key_compare	comp;
+
+						value_compare( key_compare c ) { comp = c; };
+						
+				};
+
 				template <bool Const = false>
 					class mapIterator  //RB Tree
 					{
@@ -131,23 +153,6 @@ namespace ft
 								return (tmp);
 							}
 					};
-
-
-				class value_compare
-				{
-					friend class map;
-					protected :
-						Compare comp;
-						value_compare (Compare c) : comp(c) {}
-					public :
-						typedef bool result_type;
-						typedef value_type first_argument_type;
-						typedef value_type second_argument_type;
-						bool operator() (const value_type& x, const value_type& y) const
-						{
-							return comp(x.first, y.first);
-						};
-				};
 
 				typedef	typename Alloc::template rebind<node>::other	allocator_type;
 				typedef	typename allocator_type::reference				reference;
