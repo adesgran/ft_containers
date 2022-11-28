@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 05:47:48 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 06:42:57 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,9 @@ namespace ft
 
 							mapIterator() : _ptr(NULL) {};
 							mapIterator(node_type *ptr) : _ptr(ptr) {};
-							//mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
 							~mapIterator() {};
 
-							pointer	getPtr(void) const {return (_ptr);};
+							node_type	*getPtr(void) const {return (_ptr);};
 
 							iterator	operator= (iterator const & it) {_ptr = it._ptr;return (*this);};
 							bool		operator== (iterator const & it) const {return (_ptr == it._ptr);};
@@ -93,7 +92,7 @@ namespace ft
 							node_type	*_ptr;
 
 							iterator	next( void ) {
-								node	*tmp = _ptr;
+								node_type	*tmp = _ptr;
 
 								if ( tmp->right != tmp->right->left )
 								{
@@ -111,7 +110,7 @@ namespace ft
 							};
 
 							iterator	previous( void ) {
-								node	*tmp = _ptr;
+								node_type	*tmp = _ptr;
 
 								if (tmp->left != tmp->left->right)
 								{
@@ -134,16 +133,16 @@ namespace ft
 				{
 					friend class map;
 					protected :
-					Compare comp;
-					value_compare (Compare c) : comp(c) {}
+						Compare comp;
+						value_compare (Compare c) : comp(c) {}
 					public :
-					typedef bool result_type;
-					typedef value_type first_argument_type;
-					typedef value_type second_argument_type;
-					bool operator() (const value_type& x, const value_type& y) const
-					{
-						return comp(x.first, y.first);
-					};
+						typedef bool result_type;
+						typedef value_type first_argument_type;
+						typedef value_type second_argument_type;
+						bool operator() (const value_type& x, const value_type& y) const
+						{
+							return comp(x.first, y.first);
+						};
 				};
 
 				typedef	Alloc										allocator_type;
@@ -161,14 +160,12 @@ namespace ft
 			public :
 				map() {
 					_alloc = allocator_type();
-					_capacity = 10;
 					_size = 0;
-					_begin = _alloc.allocate(_capacity);
-					_node_alloc = std::allocator<node>();
 					_root = NULL;
+					this->_init_null_node();
 
 				};
-				~map() {};
+				~map() {}; //free all nodes
 
 				void	print(void) {
 					if (_begin) {
@@ -192,17 +189,53 @@ namespace ft
 				};
 
 			private :
-				pointer			_begin;
 				allocator_type	_alloc;
 				size_type		_size;
 				node_pointer	_root;
-				allocator_type	_node_alloc;
+				node_pointer	_null;
 				
-				
-
-				void	printHelper(node_pointer root, std::string indent, bool last)
+				void	*_init_null_node( void )
 				{
-					if (root)
+					_null = new node();
+
+					_null->parent = _null;
+					_null->left = _null;
+					_null->right = _null;
+					_null->color = BLACK;
+					_null->content = NULL;
+				}
+
+				node	*_new_node( pointer content )
+				{
+					node	*res = new node();
+
+					res->parent = _null;
+					res->left = _null;
+					res->right = _null;
+					res->color = BLACK;
+					res->content = content;
+					return (res);
+				}
+
+				void	_free_all( node *nd = _null )
+				{
+					if ( nd->right != _null )
+						this->_free_all( nd->right);
+					if ( nd->left != _null )
+						this->_free_all( nd->left);
+					this->_free_node( nd );
+				}
+
+				void	_free_node( node *nd )
+				{
+					if ( nd->content )
+						_alloc.deallocate(nd->content, 1);
+					delete (nd);
+				}
+
+				void	printHelper(node *root, std::string indent, bool last) //TO REMOVE
+				{
+					if (root != _null)
 					{
 						std::cout << indent;
 						if (last) {
@@ -221,7 +254,8 @@ namespace ft
 					}
 				};
 
-				node_pointer	insert_node( node_pointer nde )
+				/*
+				node	insert_node( node_pointer nde ) //TO FIX
 				{
 					node_pointer	x;
 					node_pointer	y;
@@ -354,6 +388,7 @@ namespace ft
 					depth = d1;
 					return true;
 				};
+				*/
 		};
 };
 
