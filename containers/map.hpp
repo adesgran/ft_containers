@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 08:36:49 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 09:40:48 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,72 @@ namespace ft
 
 				};
 				*/
+
+				//////////LOOKUP//////////
+
+				size_type	count( const Key &key ) const
+				{
+					node	*tmp = _null->right;
+					while ( tmp != tmp->left )
+					{
+						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+							return (1);
+						if (key_compare(key, tmp->content.first))
+							tmp = tmp->left;
+						else
+							tmp = tmp->right;
+					}
+					return (0);
+				}
+
+				iterator find( const Key & key )
+				{
+					node	*tmp = _null->right;
+					while ( tmp != tmp->left )
+					{
+						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+							return ( iterator(tmp) );
+						if (key_compare(key, tmp->content.first))
+							tmp = tmp->left;
+						else
+							tmp = tmp->right;
+					}
+					return ( this->end() );
+				}
+
+				const_iterator find( const Key & key ) const
+				{
+					node	*tmp = _null->right;
+					while ( tmp != tmp->left )
+					{
+						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+							return ( const_iterator(tmp) );
+						if (key_compare(key, tmp->content.first))
+							tmp = tmp->left;
+						else
+							tmp = tmp->right;
+					}
+					return ( this->end() );
+				}
+
+				ft::pair<iterator, iterator> equal_range( const Key & key ) //TODO
+				{
+					iterator tmp = _null->right;
+					ft::pair<iterator, iterator> res;
+					
+					while ( tmp != tmp->left )
+					{
+						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+						{
+							res.second = res;
+							res.first = --res;
+						}
+						if (key_compare(key, tmp->content.first))
+							tmp = tmp->left;
+						else
+							tmp = tmp->right;
+					}
+				}
 
 			private :
 				value_compare	_compare;
