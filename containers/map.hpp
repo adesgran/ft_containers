@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/16 15:51:24 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 05:47:48 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ namespace ft
 	template < class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 		class map
 		{
-			private :
+			public :
 				typedef struct s_node
 				{
 					ft::pair<const Key, T>	*content;
@@ -50,36 +50,8 @@ namespace ft
 					struct s_node			*right;
 					struct s_node			*left;
 
-					s_node (ft::pair<const Key, T> *content) : content(content), color(BLACK), parent(NULL), right(NULL), left(NULL) {};
-
-					s_node	root ( void )
-					{
-						s_node	*res = this;
-						while (res->parent)
-							res = res->parent;
-						return (res);
-					};
-
-					s_node	*max( void ) 
-					{
-						s_node	*res = root();
-						while (res->right)
-							res = res->right;
-						return (res);
-					};
-
-					s_node	*min( void ) 
-					{
-						s_node	*res = root();
-						while (res->left)
-							res = res->left;
-						return (res);
-					};
 				}	node;
-				typedef	node*	node_pointer;
-				typedef node&	node_reference;
 
-			public :
 				typedef	Key											key_type;
 				typedef	T											mapped_type;
 				typedef	ft::pair<const key_type, mapped_type>		value_type;
@@ -89,16 +61,18 @@ namespace ft
 					{
 
 						public:
-							typedef	ft::bidirectional_iterator_tag				iterator_category;
+							typedef	ft::bidirectional_iterator_tag											iterator_category;
 							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
-							typedef	ptrdiff_t									difference_type;
-							typedef	value_type*									pointer;
-							typedef	value_type&									reference;
-							typedef	mapIterator									iterator;
+							typedef typename Ternary<Const, const map::node, map::node						node_type;
+							typedef	ptrdiff_t																difference_type;
+							typedef	size_t																	size_type;
+							typedef	value_type*																pointer;
+							typedef	value_type&																reference;
+							typedef	mapIterator<Const>														iterator;
 
 							mapIterator() : _ptr(NULL) {};
-							mapIterator(pointer const ptr) : _ptr(ptr) {};
-							mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
+							mapIterator(node_type *ptr) : _ptr(ptr) {};
+							//mapIterator(const mapIterator<Const> &it) : _ptr(it._ptr) {};
 							~mapIterator() {};
 
 							pointer	getPtr(void) const {return (_ptr);};
@@ -107,16 +81,52 @@ namespace ft
 							bool		operator== (iterator const & it) const {return (_ptr == it._ptr);};
 							bool		operator!= (iterator const & it) const {return (_ptr != it._ptr);};
 
-							reference	operator* (void) const {return (*_ptr);};
-							pointer		operator-> (void) const {return (_ptr);};
+							reference	operator* (void) const {return (_ptr->content);};
+							pointer		operator-> (void) const {return (_ptr->content);};
 
-							iterator	&operator++ (void) {_ptr++; return (*this);};
+							iterator	&operator++ (void) {_ptr++; return (this->next());};
 							iterator	operator++ (int) {iterator res = *this; _ptr++; return (res);};
-							iterator	&operator-- (void) {_ptr--; return (*this);};
+							iterator	&operator-- (void) {_ptr--; return (this->previous());};
 							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
 
 						private:
-							pointer			_ptr;
+							node_type	*_ptr;
+
+							iterator	next( void ) {
+								node	*tmp = _ptr;
+
+								if ( tmp->right != tmp->right->left )
+								{
+									tmp = tmp->right;
+									while (tmp->left != tmp->left->left)
+										tmp = tmp->left;
+								}
+								else
+								{
+									while ( tmp->parent != tmp && tmp->parent->right == tmp )	
+										tmp = tmp->parent;
+									tmp = tmp->parent;
+								}
+								return (tmp);
+							};
+
+							iterator	previous( void ) {
+								node	*tmp = _ptr;
+
+								if (tmp->left != tmp->left->right)
+								{
+									tmp = tmp->left;
+									while ( tmp->right != tmp->right->right )
+										tmp = tmp->right;
+								}
+								else
+								{
+									while (tmp->parent != tmp && tmp->parent->left == tmp )
+										tmp = tmp->parent;
+									tmp = tmp->parent;
+								}
+								return (tmp);
+							}
 					};
 
 
@@ -171,13 +181,6 @@ namespace ft
 				reference		operator[](size_type n) {return (_begin[n]);};
 				ft::pair<iterator, bool> insert( const value_type & val )
 				{
-					//if (_size == _capacity)
-					//{
-						//map tmp(*this);
-						//*this = (_capacity == 0) ? map(1) : map(_capacity * 2);
-						//*this = tmp;
-					//}
-
 					reference ref(*this)[_size];
 					pointer	addr = &(*this)[_size];
 					_size++;
@@ -192,7 +195,6 @@ namespace ft
 				pointer			_begin;
 				allocator_type	_alloc;
 				size_type		_size;
-				size_type		_capacity;
 				node_pointer	_root;
 				allocator_type	_node_alloc;
 				
