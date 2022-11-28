@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 06:42:57 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 08:00:41 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,15 @@ namespace ft
 			public :
 				typedef struct s_node
 				{
-					ft::pair<const Key, T>	*content;
+					ft::pair<const Key, T>	content;
 					int						color;
 					struct s_node			*parent;
 					struct s_node			*right;
 					struct s_node			*left;
+
+					s_node(ft::pair<const Key, T> content): content(content) {};
+					const Key	&key( void ) {return (content.first);}
+					T			&value( void ) {return (content.second);}
 
 				}	node;
 
@@ -63,7 +67,7 @@ namespace ft
 						public:
 							typedef	ft::bidirectional_iterator_tag											iterator_category;
 							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
-							typedef typename Ternary<Const, const map::node, map::node						node_type;
+							typedef typename Ternary<Const, const map::node, map::node>::type				node_type;
 							typedef	ptrdiff_t																difference_type;
 							typedef	size_t																	size_type;
 							typedef	value_type*																pointer;
@@ -92,7 +96,7 @@ namespace ft
 							node_type	*_ptr;
 
 							iterator	next( void ) {
-								node_type	*tmp = _ptr;
+								node_type	*tmp = this->_ptr;
 
 								if ( tmp->right != tmp->right->left )
 								{
@@ -110,12 +114,12 @@ namespace ft
 							};
 
 							iterator	previous( void ) {
-								node_type	*tmp = _ptr;
+								node_type	*tmp = this->_ptr;
 
-								if (tmp->left != tmp->left->right)
+								if (tmp->left != tmp->left->left )
 								{
 									tmp = tmp->left;
-									while ( tmp->right != tmp->right->right )
+									while ( tmp->right != tmp->right->left )
 										tmp = tmp->right;
 								}
 								else
@@ -145,19 +149,21 @@ namespace ft
 						};
 				};
 
-				typedef	Alloc										allocator_type;
-				typedef	typename allocator_type::reference			reference;
-				typedef	typename allocator_type::const_reference	const_reference;
-				typedef	typename allocator_type::pointer			pointer;
-				typedef	typename allocator_type::const_pointer		const_pointer;
-				typedef	mapIterator<>								iterator;
-				typedef	mapIterator<true>							const_iterator;
-				typedef	ft::reverse_iterator<mapIterator<> >		reverse_iterator;
-				typedef	ft::reverse_iterator<mapIterator<true> >	const_reverse_iterator;
-				typedef typename iterator::difference_type			difference_type;
-				typedef	size_t										size_type;
+				typedef	typename Alloc::template rebind<node>::other	allocator_type;
+				typedef	typename allocator_type::reference				reference;
+				typedef	typename allocator_type::const_reference		const_reference;
+				typedef	typename allocator_type::pointer				pointer;
+				typedef	typename allocator_type::const_pointer			const_pointer;
+				typedef	mapIterator<>									iterator;
+				typedef	mapIterator<true>								const_iterator;
+				typedef	ft::reverse_iterator<mapIterator<> >			reverse_iterator;
+				typedef	ft::reverse_iterator<mapIterator<true> >		const_reverse_iterator;
+				typedef typename iterator::difference_type				difference_type;
+				typedef	size_t											size_type;
 
 			public :
+				//////////MEMBER FUNCTIONS//////////
+				
 				map() {
 					_alloc = allocator_type();
 					_size = 0;
@@ -168,14 +174,81 @@ namespace ft
 				~map() {}; //free all nodes
 
 				void	print(void) {
-					if (_begin) {
+					if (_root) {
 						printHelper(_root, "", true);
 					}
 				};
 
+				//////////ELEMENT ACCESS//////////
+
+				//////////ITERATORS//////////
+
+				iterator	begin( void ) {
+					node	res = _null->right;
+					while ( res->left != res->left->left )
+						res = res->left;
+					return (iterator( res ));
+				}
+					
+				const_iterator	begin( void ) const {
+					node	res = _null->right;
+					while ( res->left != res->left->left )
+						res = res->left;
+					return (const_iterator( res ));
+				}
+
+				iterator	end( void ) {
+					return ( iterator(_null) );
+				}
+
+				const_iterator	end( void ) const {
+					return ( const_iterator( _null ) );
+				}
+					
+				reverse_iterator	rbegin( void ) {
+					return ( reverse_iterator(_null) );
+				}
+
+				const_reverse_iterator	rbegin( void ) const {
+					return ( const_reverse_iterator( _null ) );
+				}
+
+				reverse_iterator	rend( void ) {
+					node	res = _null->right;
+					while ( res->left != res->left->left )
+						res = res->left;
+					return (reverse_iterator( res ));
+				}
+					
+				const_reverse_iterator	rend( void ) const {
+					node	res = _null->right;
+					while ( res->left != res->left->left )
+						res = res->left;
+					return (const_reverse_iterator( res ));
+				}
+
+				//////////CAPACITY//////////
+
+				bool empty( void ) const {
+					return ( _size ? false : true );
+				}
+
+				size_type	size( void ) const {
+					return ( _size );
+				}
+
+				size_type	max_size( void ) const {
+
+					std::allocator<node> al;
+					return ( _alloc.max_size());
+				}
+
+
 				//////////MODIFIERS//////////
 
+				/*
 				reference		operator[](size_type n) {return (_begin[n]);};
+
 				ft::pair<iterator, bool> insert( const value_type & val )
 				{
 					reference ref(*this)[_size];
@@ -187,37 +260,34 @@ namespace ft
 					return (ft::pair<iterator, bool>(iterator(addr), true));
 
 				};
+				*/
 
 			private :
 				allocator_type	_alloc;
 				size_type		_size;
-				node_pointer	_root;
-				node_pointer	_null;
+				node			*_root;
+				node			*_null;
 				
-				void	*_init_null_node( void )
+				void	_init_null_node( void )
 				{
-					_null = new node();
-
-					_null->parent = _null;
-					_null->left = _null;
-					_null->right = _null;
-					_null->color = BLACK;
-					_null->content = NULL;
+					_null = _new_node( value_type() );
 				}
 
-				node	*_new_node( pointer content )
+				node	*_new_node( const value_type &content = value_type() )
 				{
-					node	*res = new node();
+					node	*res = _alloc.allocate(1);
+					node	tmp(content);
 
-					res->parent = _null;
-					res->left = _null;
-					res->right = _null;
-					res->color = BLACK;
-					res->content = content;
+					
+					tmp.parent = _null;
+					tmp.left = _null;
+					tmp.right = _null;
+					tmp.color = RED;
+					_alloc.construct(res, tmp);
 					return (res);
 				}
 
-				void	_free_all( node *nd = _null )
+				void	_free_all( node *nd )
 				{
 					if ( nd->right != _null )
 						this->_free_all( nd->right);
