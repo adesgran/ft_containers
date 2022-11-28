@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 08:16:40 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/28 08:36:49 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ namespace ft
 	};
 
 
-	template < class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
+	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 		class map
 		{
 			public :
@@ -79,7 +79,6 @@ namespace ft
 						key_compare	comp;
 
 						value_compare( key_compare c ) { comp = c; };
-						
 				};
 
 				template <bool Const = false>
@@ -169,7 +168,7 @@ namespace ft
 			public :
 				//////////MEMBER FUNCTIONS//////////
 				
-				map() {
+				map() : _compare(key_compare()) {
 					_alloc = allocator_type();
 					_size = 0;
 					_root = NULL;
@@ -268,6 +267,7 @@ namespace ft
 				*/
 
 			private :
+				value_compare	_compare;
 				allocator_type	_alloc;
 				size_type		_size;
 				node			*_root;
@@ -306,6 +306,21 @@ namespace ft
 					if ( nd->content )
 						_alloc.deallocate(nd->content, 1);
 					delete (nd);
+				}
+
+				bool	_equal( node *lhs, node *rhs ) const
+				{
+					return ( _compare(lhs->content, rhs->content) == false && _compare(rhs->content, lhs->content) == false );
+				}
+
+				bool	_inferior( node *lhs, node *rhs ) const
+				{
+					return ( _compare(lhs->content, rhs->content) );
+				}
+
+				bool	_superior( node *lhs, node *rhs ) const
+				{
+					return ( _compare(rhs->content, lhs->content) );
 				}
 
 				void	printHelper(node *root, std::string indent, bool last) //TO REMOVE
