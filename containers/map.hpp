@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/29 09:12:28 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/29 10:30:07 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,7 +320,6 @@ namespace ft
 				iterator	lower_bound( const Key &key )
 				{
 					node	*tmp = _null->right;
-					std::cout << tmp << std::endl << tmp->left << std::endl;
 
 					while ( tmp != tmp->left )
 					{
@@ -433,17 +432,17 @@ namespace ft
 
 				bool	_equal( node *lhs, node *rhs ) const
 				{
-					return ( _compare(lhs->content, rhs->content) == false && _compare(rhs->content, lhs->content) == false );
+					return ( _compare(*lhs, *rhs) == false && _compare(*rhs, *lhs) == false );
 				}
 
 				bool	_inferior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(lhs->content, rhs->content) );
+					return ( _compare(*lhs, *rhs) );
 				}
 
 				bool	_superior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(rhs->content, lhs->content) );
+					return ( _compare(*rhs, *lhs) );
 				}
 
 				//////////OTHERS//////////
@@ -467,73 +466,60 @@ namespace ft
 						printHelper(root->left, indent, false);
 						printHelper(root->right, indent, true);
 					}
-				};
+				}
 
-				/*
-				node	insert_node( node_pointer nde ) //TO FIX
+				node	*insert_node( node *nde ) //TO FIX
 				{
-					node_pointer	x;
-					node_pointer	y;
+					node	*x;
+					node	*y;
 
-					y = _root;
+					y = _null;
 					x = NULL;
-					if (!y)
+					if ( y->right == y )
 					{
-						_root = nde;
+						y->right = nde;
 						nde->color = BLACK;
 						return (nde);
 					}
 					while (1)
 					{
-						//if (*nde == *y) //PARTICULAR CASE, TO SEE
-							//return (y);
-						if (nde->content < y->content)
+						if ( _equal( *nde, *y ) ) 
+							return ( NULL );
+						else if ( _compare( y, nde ) )
 						{
-							if (y->right)
-							{
-								x = y;
-								y = x->right;
-							}
+							if ( y->right != _null )
+								y = y->right;
 							else
 							{
 								y->right = nde;
-								break;
+								return ( nde );
 							}
 						}
 						else
 						{
 							if (y->left)
-							{
-								x = y;
-								y = x->left;
-							}
+								y = y->left;
 							else
 							{
 								y->left = nde;
-								break;
+								return ( nde );
 							}
 						}
 					}
-					return (_root);
 				};
 
-				void	rrotate_node( node_pointer nde )
+				void	rrotate_node( node *nde )
 				{
 					if (!nde->left)
 						return ;
-					node_pointer z = nde->parent;
-					node_pointer y = nde->left;
-					node_pointer x = nde;
-					node_pointer b = nde->left->right;
-					if (z)
-					{
-						if (z->left == x)
-							z->left = y;
-						else
-							z->right = y;
-					}
+					node *z = nde->parent;
+					node *y = nde->left;
+					node *x = nde;
+					node *b = nde->left->right;
+					if (z->left == x)
+						z->left = y;
 					else
-						_begin = y;
+						z->right = y;
 					y->right = x;
 					x->left = b;
 					if (b)
@@ -542,23 +528,18 @@ namespace ft
 					y->parent = z;
 				};
 
-				void	lrotate_node( node_pointer nde )
+				void	lrotate_node( node *nde )
 				{
 					if (!nde->right)
 						return ;
-					node_pointer z = nde->parent;
-					node_pointer y = nde->right;
-					node_pointer x = nde;
-					node_pointer b = nde->right->left;
-					if (z)
-					{
-						if (z->left == x)
-							z->left = y;
-						else
-							z->right = y;
-					}
+					node *z = nde->parent;
+					node *y = nde->right;
+					node *x = nde;
+					node *b = nde->right->left;
+					if (z->left == x)
+						z->left = y;
 					else
-						_begin = y;
+						z->right = y;
 					y->left = x;
 					x->right = b;
 					if (b)
@@ -567,27 +548,27 @@ namespace ft
 					y->parent = z;
 				};
 
-				void	lrrotate_node( node_pointer nde )
+				void	lrrotate_node( node *nde )
 				{
 					rrotate_node(nde->left);
 					lrotate(nde);
 				};
 
-				void	rlrotate_node( node_pointer nde )
+				void	rlrotate_node( node *nde )
 				{
 					lrotate_node(nde->right);
 					rrotate(nde);
 				};
 
-				bool	check_tree( node_pointer nde, int &depth)
+				bool	check_tree( node *nde, int &depth)
 				{
-					if (!nde)
+					if (nde == _null)
 						return true;
-					if (!nde->parent && nde->color != BLACK)
+					if (nde->parent == _null && nde->color != BLACK)
 						return false;
 					if (nde->color == RED)
 					{
-						if ((nde->left && nde->left->color == RED) || (nde->right && nde->right->color == RED))
+						if ((nde->left != _null && nde->left->color == RED) || (nde->right != _null && nde->right->color == RED))
 							return false;
 					}
 					else if (nde->color == BLACK)
@@ -603,8 +584,7 @@ namespace ft
 					depth = d1;
 					return true;
 				};
-				*/
 		};
-};
+}
 
 #endif
