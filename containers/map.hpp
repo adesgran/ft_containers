@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 09:40:48 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/29 09:12:28 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,48 +108,42 @@ namespace ft
 							reference	operator* (void) const {return (_ptr->content);};
 							pointer		operator-> (void) const {return (_ptr->content);};
 
-							iterator	&operator++ (void) {_ptr++; return (this->next());};
+							iterator	&operator++ (void) {this->next(); return ( *this );};
 							iterator	operator++ (int) {iterator res = *this; _ptr++; return (res);};
-							iterator	&operator-- (void) {_ptr--; return (this->previous());};
+							iterator	&operator-- (void) {this->previous(); return ( *this );};
 							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
 
 						private:
 							node_type	*_ptr;
 
-							iterator	next( void ) {
-								node_type	*tmp = this->_ptr;
-
-								if ( tmp->right != tmp->right->left )
+							void	next( void ) {
+								if ( _ptr->right != _ptr->right->left )
 								{
-									tmp = tmp->right;
-									while (tmp->left != tmp->left->left)
-										tmp = tmp->left;
+									_ptr = _ptr->right;
+									while (_ptr->left != _ptr->left->left)
+										_ptr = _ptr->left;
 								}
 								else
 								{
-									while ( tmp->parent != tmp && tmp->parent->right == tmp )	
-										tmp = tmp->parent;
-									tmp = tmp->parent;
+									while ( _ptr->parent != _ptr && _ptr->parent->right == _ptr )	
+										_ptr = _ptr->parent;
+									_ptr = _ptr->parent;
 								}
-								return (tmp);
 							};
 
-							iterator	previous( void ) {
-								node_type	*tmp = this->_ptr;
-
-								if (tmp->left != tmp->left->left )
+							void	previous( void ) {
+								if (_ptr->left != _ptr->left->left )
 								{
-									tmp = tmp->left;
-									while ( tmp->right != tmp->right->left )
-										tmp = tmp->right;
+									_ptr = _ptr->left;
+									while ( _ptr->right != _ptr->right->left )
+										_ptr = _ptr->right;
 								}
 								else
 								{
-									while (tmp->parent != tmp && tmp->parent->left == tmp )
-										tmp = tmp->parent;
-									tmp = tmp->parent;
+									while (_ptr->parent != _ptr && _ptr->parent->left == _ptr )
+										_ptr = _ptr->parent;
+									_ptr = _ptr->parent;
 								}
-								return (tmp);
 							}
 					};
 
@@ -313,23 +307,83 @@ namespace ft
 					return ( this->end() );
 				}
 
-				ft::pair<iterator, iterator> equal_range( const Key & key ) //TODO
+				ft::pair<iterator, iterator> equal_range( const Key & key ) 
 				{
-					iterator tmp = _null->right;
-					ft::pair<iterator, iterator> res;
-					
+					return ( ft::pair<iterator, iterator>( lower_bound( key ), upper_bound( key ) ) );
+				}
+
+				ft::pair<const_iterator, const_iterator> equal_range( const Key & key ) const
+				{
+					return ( ft::pair<const_iterator, const_iterator>( lower_bound( key ), upper_bound( key ) ) );
+				}
+
+				iterator	lower_bound( const Key &key )
+				{
+					node	*tmp = _null->right;
+					std::cout << tmp << std::endl << tmp->left << std::endl;
+
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+						if ( key_compare()( key, tmp->content.first ) == false && key_compare()( tmp->content.first, key ) == false )
+							return ( iterator( tmp ) );
+						else if ( key_compare()( key, tmp->content.first ) )
 						{
-							res.second = res;
-							res.first = --res;
-						}
-						if (key_compare(key, tmp->content.first))
+							if ( tmp->left == _null )
+								return ( iterator( tmp ) );
 							tmp = tmp->left;
+						}
 						else
+						{
+							if ( tmp->right == _null )
+								return ( ++iterator( tmp ) );
 							tmp = tmp->right;
+						}
 					}
+					return ( iterator( _null ) );
+				}
+
+				const_iterator	lower_bound( const Key &key ) const
+				{
+					node	*tmp = _null->right;
+
+					while ( tmp != tmp->left )
+					{
+						if ( key_compare( key, tmp->content.first ) == false && key_compare( tmp->content.first, key ) == false )
+							return ( const_iterator( tmp ) );
+						else if ( key_compare( key, tmp->content.first ) )
+						{
+							if ( tmp->left == _null )
+								return ( const_iterator( tmp ) );
+							tmp = tmp->left;
+						}
+						else
+						{
+							if ( tmp->right == _null )
+								return ( ++const_iterator( tmp ) );
+							tmp = tmp->right;
+						}
+					}
+					return ( const_iterator( _null ) );
+				}
+
+				iterator	upper_bound( const Key &key )
+				{
+					iterator	res = lower_bound( key );
+
+					if ( key_compare( key, res->first ) == false && key_compare( res->first, key ) == false )
+						res++;
+
+					return ( res );
+				}
+
+				const_iterator	upper_bound( const Key &key ) const
+				{
+					const_iterator	res = lower_bound( key );
+
+					if ( key_compare( key, res->first ) == false && key_compare( res->first, key ) == false )
+						res++;
+
+					return ( res );
 				}
 
 			private :
@@ -342,6 +396,9 @@ namespace ft
 				void	_init_null_node( void )
 				{
 					_null = _new_node( value_type() );
+					_null->parent = _null;
+					_null->left= _null;
+					_null->right= _null;
 				}
 
 				node	*_new_node( const value_type &content = value_type() )
@@ -388,6 +445,8 @@ namespace ft
 				{
 					return ( _compare(rhs->content, lhs->content) );
 				}
+
+				//////////OTHERS//////////
 
 				void	printHelper(node *root, std::string indent, bool last) //TO REMOVE
 				{
