@@ -2,6 +2,7 @@
 *.swp
 ft_containers
 a.out
+log_error
 
 # Prerequisites
 *.d

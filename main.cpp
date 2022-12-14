@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/28 07:11:28 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/11/29 09:34:49 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int main(void) //MAP
 {
 	ft::map<std::string, int> mp;
 	std::cout << mp.max_size() << std::endl;
+	ft::map<std::string, int>::iterator it = mp.lower_bound("hi");
+	(void)it;
 	//ft::pair<std::string, int> pizz ("Pizza", 2);
 	//mp.insert(pizz);
 	//mp.print();
