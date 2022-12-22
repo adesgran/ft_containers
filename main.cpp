@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/29 09:34:49 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/12/22 12:11:17 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,29 @@
 int main(void) //MAP
 {
 	ft::map<std::string, int> mp;
-	std::cout << mp.max_size() << std::endl;
-	ft::map<std::string, int>::iterator it = mp.lower_bound("hi");
-	(void)it;
-	//ft::pair<std::string, int> pizz ("Pizza", 2);
-	//mp.insert(pizz);
-	//mp.print();
+	ft::pair<std::string, int> p1 ("Pizza", 1);
+	ft::pair<std::string, int> p2 ("Pizzb", 2);
+	ft::pair<std::string, int> p3 ("Pizzd", 2);
+	ft::pair<std::string, int> p4 ("Pizzc", 2);
+	ft::pair<std::string, int> p5 ("Pizze", 2);
+	ft::pair<std::string, int> p6 ("Pizzi", 2);
+	ft::pair<std::string, int> p7 ("Pizzh", 2);
+	ft::pair<std::string, int> p8 ("Pizzj", 2);
+	ft::pair<std::string, int> p9 ("Pizzg", 2);
+	ft::pair<std::string, int> p0 ("Pizzf", 2);
+	mp.insert(p1);
+	mp.insert(p2);
+	mp.insert(p3);
+	mp.insert(p4);
+	mp.insert(p5);
+	mp.insert(p6);
+	mp.insert(p7);
+	mp.insert(p8);
+	mp.insert(p9);
+	mp.insert(p0);
+	std::cout << mp.size() << std::endl;
+	std::cout << mp.empty() << std::endl;
+	mp.print();
 	return (0);
 }
 
