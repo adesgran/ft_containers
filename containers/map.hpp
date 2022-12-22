@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/11/29 10:31:36 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/12/22 12:08:33 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ namespace ft
 					struct s_node			*right;
 					struct s_node			*left;
 
-					s_node(ft::pair<const Key, T> content): content(content) {};
+					s_node(ft::pair<const Key, T> content): content(content), color(RED) {};
 					const Key	&key( void ) {return (content.first);}
 					T			&value( void ) {return (content.second);}
 
@@ -64,8 +64,8 @@ namespace ft
 
 				class value_compare
 				{
-					friend class map;
 					public:
+						friend class map;
 						typedef	bool		result_type;
 						typedef	value_type	first_argument_type;
 						typedef	value_type	second_argument_type;
@@ -76,9 +76,10 @@ namespace ft
 						}
 
 					protected:
-						key_compare	comp;
+						Compare	comp;
 
-						value_compare( key_compare c ) { comp = c; };
+						value_compare( Compare c ) : comp(c) {};
+
 				};
 
 				template <bool Const = false>
@@ -164,17 +165,14 @@ namespace ft
 				
 				map() : _compare(key_compare()) {
 					_alloc = allocator_type();
-					_size = 0;
-					_root = NULL;
 					this->_init_null_node();
 
 				};
 				~map() {}; //free all nodes
 
 				void	print(void) {
-					if (_root) {
-						printHelper(_root, "", true);
-					}
+					if ( _null != _null->right )
+						printHelper(_null->right, "", true);
 				};
 
 				//////////ELEMENT ACCESS//////////
@@ -228,11 +226,11 @@ namespace ft
 				//////////CAPACITY//////////
 
 				bool empty( void ) const {
-					return ( _size ? false : true );
+					return ( _null != _null->right ? false : true );
 				}
 
 				size_type	size( void ) const {
-					return ( _size );
+					return ( _get_size(_null->right) );
 				}
 
 				size_type	max_size( void ) const {
@@ -246,19 +244,19 @@ namespace ft
 
 				/*
 				reference		operator[](size_type n) {return (_begin[n]);};
+				*/
 
 				ft::pair<iterator, bool> insert( const value_type & val )
 				{
-					reference ref(*this)[_size];
-					pointer	addr = &(*this)[_size];
-					_size++;
-					ref = val;
-					node_pointer	new_node = new node(addr);
-					_root = insert_node(new_node);
-					return (ft::pair<iterator, bool>(iterator(addr), true));
-
+					node	*nde = _new_node( val );
+					node	*res = insert_node( nde );
+					if ( res != nde )
+					{
+						_free_node(nde);
+						std::cout << "Doublon" << std::endl;
+					}
+					return (ft::pair<iterator, bool>(iterator(res), true));
 				};
-				*/
 
 				//////////LOOKUP//////////
 
@@ -388,16 +386,15 @@ namespace ft
 			private :
 				value_compare	_compare;
 				allocator_type	_alloc;
-				size_type		_size;
-				node			*_root;
 				node			*_null;
 				
 				void	_init_null_node( void )
 				{
-					_null = _new_node( value_type() );
+					_null = _new_node();
+					_null->color = BLACK;
 					_null->parent = _null;
-					_null->left= _null;
-					_null->right= _null;
+					_null->left = _null;
+					_null->right = _null;
 				}
 
 				node	*_new_node( const value_type &content = value_type() )
@@ -409,10 +406,10 @@ namespace ft
 					tmp.parent = _null;
 					tmp.left = _null;
 					tmp.right = _null;
-					tmp.color = RED;
 					_alloc.construct(res, tmp);
 					return (res);
 				}
+
 
 				void	_free_all( node *nd )
 				{
@@ -425,31 +422,29 @@ namespace ft
 
 				void	_free_node( node *nd )
 				{
-					if ( nd->content )
-						_alloc.deallocate(nd->content, 1);
-					delete (nd);
+					_alloc.deallocate(nd, 1);
 				}
 
 				bool	_equal( node *lhs, node *rhs ) const
 				{
-					return ( _compare(*lhs, *rhs) == false && _compare(*rhs, *lhs) == false );
+					return ( _compare(lhs->content, rhs->content) == false && _compare(rhs->content, lhs->content) == false );
 				}
 
 				bool	_inferior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(*lhs, *rhs) );
+					return ( _compare(lhs->content, rhs->content) );
 				}
 
 				bool	_superior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(*rhs, *lhs) );
+					return ( _compare(rhs->content, lhs->content) );
 				}
 
 				//////////OTHERS//////////
 
 				void	printHelper(node *root, std::string indent, bool last) //TO REMOVE
 				{
-					if (root != _null)
+					if ( root != _null )
 					{
 						std::cout << indent;
 						if (last) {
@@ -462,51 +457,18 @@ namespace ft
 							indent += "|  ";
 						}
 						std::string sColor = root->color == RED ? "RED" : "BLACK";
-						std::cout << root->content->first << "(" << sColor << ")" << std::endl;
+						std::cout << root->content.first << "(" << sColor << ")" << std::endl;
 						printHelper(root->left, indent, false);
 						printHelper(root->right, indent, true);
 					}
 				}
 
-				node	*insert_node( node *nde ) //TO FIX
+				size_t	_get_size( node * nde ) const
 				{
-					node	*x;
-					node	*y;
-
-					y = _null;
-					x = NULL;
-					if ( y->right == y )
-					{
-						y->right = nde;
-						nde->color = BLACK;
-						return (nde);
-					}
-					while (1)
-					{
-						if ( _equal( *nde, *y ) ) 
-							return ( NULL );
-						else if ( _compare( y, nde ) )
-						{
-							if ( y->right != _null )
-								y = y->right;
-							else
-							{
-								y->right = nde;
-								return ( nde );
-							}
-						}
-						else
-						{
-							if (y->left)
-								y = y->left;
-							else
-							{
-								y->left = nde;
-								return ( nde );
-							}
-						}
-					}
-				};
+					if ( nde == _null )
+						return ( 0 );
+					return ( 1 + _get_size(nde->right) + _get_size(nde->left) );
+				}
 
 				void	rrotate_node( node *nde )
 				{
@@ -584,7 +546,112 @@ namespace ft
 					depth = d1;
 					return true;
 				};
+
+				void	insert_fix( node *nde )
+				{
+					node	*tmp;
+
+					while ( nde->parent->color == RED )
+					{
+						if ( nde->parent == nde->parent->parent->right )
+						{
+							tmp = nde->parent->parent->left;
+							if ( tmp->color == RED )
+							{
+								tmp->color = BLACK;
+								nde->parent->color = BLACK;
+								nde->parent->parent->color = RED;
+								nde = nde->parent->parent;
+							}
+							else
+							{
+								if ( nde == nde->parent->left )
+								{
+									nde = nde->parent;
+									rrotate_node(nde);
+								}
+								nde->parent->color = BLACK;
+								nde->parent->parent->color = RED;
+								lrotate_node( nde->parent->parent );
+							}
+						}
+						else
+						{
+							tmp = nde->parent->parent->right;
+
+							if ( tmp->color == RED )
+							{
+								tmp->color = BLACK;
+								nde->parent->color = BLACK;
+								nde->parent->parent->color = RED;
+								nde = nde->parent->parent;
+							}
+							else
+							{
+								if (nde == nde->parent->right)
+								{
+									nde = nde->parent;
+									lrotate_node( nde );
+								}
+								nde->parent->color = BLACK;
+								nde->parent->parent->color = RED;
+								rrotate_node( nde->parent->parent );
+							}
+						}
+						if ( nde->parent == _null )
+							break;
+					}
+					_null->right->color = BLACK;
+				};
+
+				node	*insert_node( node *nde ) //TO FIX
+				{
+					//node	*x;
+					node	*y;
+
+					y = _null;
+					//x = NULL;
+					if ( y->right == y )
+					{
+						y->right = nde;
+						nde->color = BLACK;
+						//insert_fix(nde);
+						std::cout << "Adding the first node" << std::endl;//
+						return (nde);
+					}
+					while (1)
+					{
+						if ( _equal( nde, y ) ) 
+							return ( y );
+						else if ( _inferior( y, nde ) )
+						{
+							if ( y->right != _null )
+								y = y->right;
+							else
+							{
+								y->right = nde;
+								nde->parent = y;
+								break;
+							}
+						}
+						else
+						{
+							if ( y->left != _null )
+								y = y->left;
+							else
+							{
+								y->left = nde;
+								nde->parent = y;
+								break;
+							}
+						}
+					}
+					insert_fix(nde);
+					return (nde);
+				};
+
 		};
+
 }
 
 #endif
