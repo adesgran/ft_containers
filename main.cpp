@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/12/22 12:11:17 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/12/23 11:34:38 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,10 @@ int main(void) //MAP
 	mp.insert(p8);
 	mp.insert(p9);
 	mp.insert(p0);
+	mp["Pizz"] = 0;
 	std::cout << mp.size() << std::endl;
 	std::cout << mp.empty() << std::endl;
+	std::cout << "Pizzb : " << mp["Pizzb"] << std::endl;
 	mp.print();
 	return (0);
 }

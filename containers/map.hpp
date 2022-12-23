@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/12/22 12:08:33 by adesgran         ###   ########.fr       */
+/*   Updated: 2022/12/23 11:32:43 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include "utils/enable_if.hpp"
 # include "utils/is_integral.hpp"
 # include "utils/utils.hpp"
+# include "utils/make_pair.hpp"
 
 namespace ft
 {
@@ -107,7 +108,7 @@ namespace ft
 							bool		operator!= (iterator const & it) const {return (_ptr != it._ptr);};
 
 							reference	operator* (void) const {return (_ptr->content);};
-							pointer		operator-> (void) const {return (_ptr->content);};
+							pointer		operator-> (void) const {return (&_ptr->content);};
 
 							iterator	&operator++ (void) {this->next(); return ( *this );};
 							iterator	operator++ (int) {iterator res = *this; _ptr++; return (res);};
@@ -177,6 +178,11 @@ namespace ft
 
 				//////////ELEMENT ACCESS//////////
 
+				mapped_type	&operator[]( const key_type &k )
+				{
+					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
+					return (res->second);
+				}
 				//////////ITERATORS//////////
 
 				iterator	begin( void ) {
@@ -242,21 +248,15 @@ namespace ft
 
 				//////////MODIFIERS//////////
 
-				/*
-				reference		operator[](size_type n) {return (_begin[n]);};
-				*/
-
 				ft::pair<iterator, bool> insert( const value_type & val )
 				{
 					node	*nde = _new_node( val );
 					node	*res = insert_node( nde );
 					if ( res != nde )
-					{
 						_free_node(nde);
-						std::cout << "Doublon" << std::endl;
-					}
 					return (ft::pair<iterator, bool>(iterator(res), true));
 				};
+
 
 				//////////LOOKUP//////////
 
@@ -604,19 +604,15 @@ namespace ft
 					_null->right->color = BLACK;
 				};
 
-				node	*insert_node( node *nde ) //TO FIX
+				node	*insert_node( node *nde )
 				{
-					//node	*x;
 					node	*y;
 
 					y = _null;
-					//x = NULL;
 					if ( y->right == y )
 					{
 						y->right = nde;
 						nde->color = BLACK;
-						//insert_fix(nde);
-						std::cout << "Adding the first node" << std::endl;//
 						return (nde);
 					}
 					while (1)
