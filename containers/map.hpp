@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2022/12/23 11:32:43 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/04 11:35:01 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ namespace ft
 				template <bool Const = false>
 					class mapIterator  //RB Tree
 					{
-
 						public:
 							typedef	ft::bidirectional_iterator_tag											iterator_category;
 							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
@@ -169,20 +168,18 @@ namespace ft
 					this->_init_null_node();
 
 				};
-				~map() {}; //free all nodes
+				~map() {clear();_free_node(_null);};
+													 
+				allocator_type	get_allocator ( void ) const
+				{
+					return (allocator_type());
+				}
 
 				void	print(void) {
 					if ( _null != _null->right )
 						printHelper(_null->right, "", true);
 				};
 
-				//////////ELEMENT ACCESS//////////
-
-				mapped_type	&operator[]( const key_type &k )
-				{
-					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
-					return (res->second);
-				}
 				//////////ITERATORS//////////
 
 				iterator	begin( void ) {
@@ -245,6 +242,13 @@ namespace ft
 					return ( _alloc.max_size());
 				}
 
+				//////////ELEMENT ACCESS//////////
+
+				mapped_type	&operator[]( const key_type &k )
+				{
+					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
+					return (res->second);
+				}
 
 				//////////MODIFIERS//////////
 
@@ -257,6 +261,63 @@ namespace ft
 					return (ft::pair<iterator, bool>(iterator(res), true));
 				};
 
+				iterator	insert(iterator position, const value_type & val )
+				{
+					ft::pair<iterator, bool> res = this->insert(position, val);
+					return (res.first);
+				}
+
+				template <class InputIterator> void insert (InputIterator first, InputIterator last)
+				{
+					while ( first < last )
+					{
+						node	*nde = new_node( *first );
+						node	*res = insert_node( nde );
+						if (res != nde )
+							_free_node(nde);
+						first++;
+					}
+				}
+
+				void	erase( iterator position )
+				{
+					remove_node( get_node( position->first ) );
+				}
+
+				size_type	erase ( const key_type& k )
+				{
+					node	*nde = get_node( k );
+					if ( !nde )
+						return 0;
+					remove_node( nde );
+					return ( 1 );
+				}
+
+				void erase ( iterator first, iterator last )
+				{
+					iterator	next;
+
+					while ( first < last )
+					{
+						next = first;
+						next++;
+						erase( first );
+						first = next;
+					}
+				}
+
+				void	swap ( map & x )
+				{
+					node * tmp = _null;
+					_null = x._null;
+					x->_null = tmp;
+				}
+
+				void	clear( void )
+				{
+					_free_all( _null->right );
+					_null->right = _null;
+				}
 
 				//////////LOOKUP//////////
 
@@ -277,12 +338,13 @@ namespace ft
 
 				iterator find( const Key & key )
 				{
+					Compare	comp;
 					node	*tmp = _null->right;
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+						if ( comp(key, tmp->content.first) == false && comp(tmp->content.first, key) == false )
 							return ( iterator(tmp) );
-						if (key_compare(key, tmp->content.first))
+						if (comp(key, tmp->content.first))
 							tmp = tmp->left;
 						else
 							tmp = tmp->right;
@@ -383,6 +445,18 @@ namespace ft
 					return ( res );
 				}
 
+				//////////OBSERVERS//////////
+
+				key_compare	key_comp() const
+				{
+					return (key_compare());
+				};
+
+				value_compare	value_comp() const
+				{
+					return (value_compare());
+				};
+
 			private :
 				value_compare	_compare;
 				allocator_type	_alloc;
@@ -440,6 +514,21 @@ namespace ft
 					return ( _compare(rhs->content, lhs->content) );
 				}
 
+				bool	_equal( value_type lhs, value_type rhs ) const
+				{
+					return ( _compare(lhs, rhs) == false && _compare(rhs, lhs) == false );
+				}
+
+				bool	_inferior( value_type lhs, value_type rhs ) const
+				{
+					return ( _compare(lhs, rhs) );
+				}
+
+				bool	_superior( value_type lhs, value_type rhs ) const
+				{
+					return ( _compare(rhs, lhs) );
+				}
+
 				//////////OTHERS//////////
 
 				void	printHelper(node *root, std::string indent, bool last) //TO REMOVE
@@ -468,6 +557,23 @@ namespace ft
 					if ( nde == _null )
 						return ( 0 );
 					return ( 1 + _get_size(nde->right) + _get_size(nde->left) );
+				}
+
+				node	*get_node( key_type key )
+				{
+					node	*res = _null->right;
+					value_type	val(key, mapped_type() );
+
+					while ( res != _null )
+					{
+						if ( _inferior( res->content, val ) )
+							res = res->right;
+						else if ( _superior( res->content, val ) )
+							res = res->left;
+						else
+							break;
+					}
+					return ( res );
 				}
 
 				void	rrotate_node( node *nde )
@@ -646,6 +752,140 @@ namespace ft
 					return (nde);
 				};
 
+				void	transplant_node( node *parent, node *child, node *new_child )
+				{
+					if ( parent->left == child )
+					{
+						parent->left = new_child;
+						if ( new_child )
+							new_child->parent = parent;
+						child->parent = _null;
+					}
+					else if ( parent->right == child )
+					{
+						parent->right = new_child;
+						if ( new_child )
+							new_child->parent = parent;
+						child->parent = _null;
+					}
+				}
+
+				void	remove_node( node * nde ) //WIP
+				{
+					int y_originalColor = nde->color;
+					node	* x;
+					node	* y;
+					node	* z;
+
+					z = nde;
+					y = z;
+					x = z;
+
+					if ( nde->left == _null )
+					{
+						x = nde->right;
+						transplant_node( nde->parent, nde, nde->right);
+					}
+					else if ( nde->right== _null )
+					{
+						x = nde->left;
+						transplant_node( nde->parent, nde, nde->left);
+					}
+					else
+					{
+						y = z->right;
+						while ( y->left != _null )
+							y = y->left;
+						y_originalColor = y->color;
+						x = y->right;
+						if ( y->parent == z )
+							x->parent = y;
+						else
+						{
+							transplant_node( y->parent, y, y->right );
+							y->right = z->right;
+							y->right->parent = y;
+						}
+						transplant_node( z->parent, z, y );
+						y->left = z->left;
+						y->left->parent = y;
+						y->color = z->color;
+					}
+					_alloc.deallocate( z, 1 );
+					if ( y_originalColor == BLACK )
+						remove_fix(x);
+				};
+
+				void	remove_fix( node * x )
+				{
+					node	*s;
+					while ( x != _null->right  && x->color == BLACK )
+					{
+						if ( x == x->parent->left )
+						{
+							s = x->parent->right;
+							if ( s->color == RED )
+							{
+								s->color = BLACK;
+								x->parent->color = 1;
+								lrotate_node( x->parent );
+								s = x->parent->right;
+							}
+							if ( s->left->color == BLACK && s->right->color == BLACK )
+							{
+								s->color = RED;
+								x = x->parent;
+							}
+							else
+							{
+								if ( s->right->color == BLACK )
+								{
+									s->left->color = BLACK;
+									s->color = RED;
+									rrotate_node(s);
+									s = x->parent->right;
+								}
+								s->color = x->parent->color;
+								x->parent->color = BLACK;
+								s->right->color = BLACK;
+								lrotate_node( x->parent );
+								x = _null->right;
+							}
+						}
+						else
+						{
+							s = x->parent->left;
+							if ( s->color == RED )
+							{
+								s->color = BLACK;
+								x->parent->color = RED;
+								rrotate_node(x->parent);
+								s = x->parent->left;
+							}
+							if (s->right->color == BLACK)
+							{
+								s->color = RED;
+								x = x->parent;
+							}
+							else
+							{
+								if (s->left->color == BLACK)
+								{
+									s->right->color = BLACK;
+									s->color = RED;
+									lrotate_node(s);
+									s = x->parent->left;
+								}
+								s->color = x->parent->color;
+								x->parent->color = BLACK;
+								s->left->color = BLACK;
+								rrotate_node(x->parent);
+								x = _null->right;
+							}
+						}
+					}
+					x->color = BLACK;
+				}
 		};
 
 }
