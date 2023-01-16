@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/04 11:35:01 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/16 15:10:11 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ namespace ft
 					struct s_node			*right;
 					struct s_node			*left;
 
-					s_node(ft::pair<const Key, T> content): content(content), color(RED) {};
+					s_node(const ft::pair<const Key, T> &content): content(content), color(RED) {};
+					//s_node(const struct s_node &nde) :content(nde.content), color(nde.color) {};
 					const Key	&key( void ) {return (content.first);}
 					T			&value( void ) {return (content.second);}
 
@@ -163,11 +164,33 @@ namespace ft
 			public :
 				//////////MEMBER FUNCTIONS//////////
 				
-				map() : _compare(key_compare()) {
-					_alloc = allocator_type();
+				explicit	map( const key_compare &comp = key_compare(), 
+						const allocator_type& alloc = allocator_type() ) : _compare(comp) , _alloc(alloc) {
 					this->_init_null_node();
-
 				};
+
+				template <class InputIterator>  
+						map ( InputIterator first, InputIterator last, const key_compare& comp = key_compare(), 
+						const allocator_type& alloc = allocator_type() ) : _compare(comp), _alloc(alloc) {
+					this->_init_null_node();
+					this->insert(first, last);
+				};
+				
+				map ( const map &other ) : _compare(other._compare), _alloc(other._alloc)
+				{
+					this->_init_null_node();
+					this->insert(other.begin(), other.end());
+				}
+
+				map	&operator=(const map& x)
+				{
+					//_compare = x._compare;
+					//_alloc = x._alloc;
+					//this->_init_null_node();
+					this->insert(x.begin(), x.end());
+					return (*this);
+				}
+
 				~map() {clear();_free_node(_null);};
 													 
 				allocator_type	get_allocator ( void ) const
@@ -183,14 +206,14 @@ namespace ft
 				//////////ITERATORS//////////
 
 				iterator	begin( void ) {
-					node	res = _null->right;
+					node	*res = _null->right;
 					while ( res->left != res->left->left )
 						res = res->left;
 					return (iterator( res ));
 				}
 					
 				const_iterator	begin( void ) const {
-					node	res = _null->right;
+					node	*res = _null->right;
 					while ( res->left != res->left->left )
 						res = res->left;
 					return (const_iterator( res ));
@@ -213,14 +236,14 @@ namespace ft
 				}
 
 				reverse_iterator	rend( void ) {
-					node	res = _null->right;
+					node	*res = _null->right;
 					while ( res->left != res->left->left )
 						res = res->left;
 					return (reverse_iterator( res ));
 				}
 					
 				const_reverse_iterator	rend( void ) const {
-					node	res = _null->right;
+					node	*res = _null->right;
 					while ( res->left != res->left->left )
 						res = res->left;
 					return (const_reverse_iterator( res ));
@@ -250,6 +273,18 @@ namespace ft
 					return (res->second);
 				}
 
+				mapped_type	&at( const key_type &k )
+				{
+					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
+					return (res->second);
+				}
+
+				const mapped_type	&at( const key_type &k ) const
+				{
+					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
+					return (res->second);
+				}
+
 				//////////MODIFIERS//////////
 
 				ft::pair<iterator, bool> insert( const value_type & val )
@@ -269,9 +304,9 @@ namespace ft
 
 				template <class InputIterator> void insert (InputIterator first, InputIterator last)
 				{
-					while ( first < last )
+					while ( first != last )
 					{
-						node	*nde = new_node( *first );
+						node	*nde = _new_node( first->first, first->second );
 						node	*res = insert_node( nde );
 						if (res != nde )
 							_free_node(nde);
@@ -297,7 +332,7 @@ namespace ft
 				{
 					iterator	next;
 
-					while ( first < last )
+					while ( first != last )
 					{
 						next = first;
 						next++;
@@ -473,7 +508,10 @@ namespace ft
 
 				node	*_new_node( const value_type &content = value_type() )
 				{
+					std::cout << "New node called" << std::endl;
+					//std::cout << "----New node : < " << content.first << ", " << content.second << " > " << std::endl;
 					node	*res = _alloc.allocate(1);
+					std::cout << "----Res allocated" << std::endl;
 					node	tmp(content);
 
 					
@@ -481,9 +519,30 @@ namespace ft
 					tmp.left = _null;
 					tmp.right = _null;
 					_alloc.construct(res, tmp);
+					std::cout << "Node Constructed" << std::endl;
 					return (res);
 				}
 
+				node	*_new_node( const key_type &key, const mapped_type &mapped )
+				{
+					std::cout << "New node bis called" << std::endl;
+					std::cout << "----TEST" << std::endl;
+					std::cout << "----value " << mapped << std::endl;
+					//std::cout << "----key : " << key << std::endl;
+					//std::cout << "----New node : < " << key << ", " << mapped << " > " << std::endl;
+					ft::pair<const key_type, mapped_type> content = ft::make_pair(key, mapped);
+					node	*res = _alloc.allocate(1);
+					std::cout << "----Res allocated" << std::endl;
+					node	tmp(content);
+
+					
+					tmp.parent = _null;
+					tmp.left = _null;
+					tmp.right = _null;
+					_alloc.construct(res, tmp);
+					std::cout << "Node Constructed" << std::endl;
+					return (res);
+				}
 
 				void	_free_all( node *nd )
 				{

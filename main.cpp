@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2022/12/23 11:34:38 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/16 12:47:38 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 
 int main(void) //MAP
 {
-	ft::map<std::string, int> mp;
+	ft::map<std::string, int> mpp;
 	ft::pair<std::string, int> p1 ("Pizza", 1);
 	ft::pair<std::string, int> p2 ("Pizzb", 2);
 	ft::pair<std::string, int> p3 ("Pizzd", 2);
@@ -48,20 +48,26 @@ int main(void) //MAP
 	ft::pair<std::string, int> p8 ("Pizzj", 2);
 	ft::pair<std::string, int> p9 ("Pizzg", 2);
 	ft::pair<std::string, int> p0 ("Pizzf", 2);
-	mp.insert(p1);
-	mp.insert(p2);
-	mp.insert(p3);
-	mp.insert(p4);
-	mp.insert(p5);
-	mp.insert(p6);
-	mp.insert(p7);
-	mp.insert(p8);
-	mp.insert(p9);
-	mp.insert(p0);
+	mpp.insert(p1);
+	mpp.insert(p2);
+	mpp.insert(p3);
+	mpp.insert(p4);
+	mpp.insert(p5);
+	mpp.insert(p6);
+	mpp.insert(p7);
+	mpp.insert(p8);
+	mpp.insert(p9);
+	mpp.insert(p0);
+	ft::map<std::string, int> mp;
+	mp = mpp;
+	//ft::map<std::string, int> mp(mpp);
 	mp["Pizz"] = 0;
 	std::cout << mp.size() << std::endl;
 	std::cout << mp.empty() << std::endl;
 	std::cout << "Pizzb : " << mp["Pizzb"] << std::endl;
+	ft::map<std::string, int>::mapped_type & pizzc = mp.at("Pizzc");
+	pizzc = 12;
+	std::cout << "Pizzc : " << mp.at("Pizzc") << std::endl;
 	mp.print();
 	return (0);
 }

@@ -1,3 +1,3 @@
-valgrind ./ft_containers 2> out 1>> out
+valgrind ./ft_containers 2> out 1>/dev/null
 cat out | sed -e "s/ft::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<ft::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, int> > >/ft::map/g" | sed -e "s/std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >/std::string/g" | sed -e "s/ft::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, int>/ft::pair/g"
 rm out
