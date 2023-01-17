@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/17 11:02:27 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/17 12:03:14 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,14 @@ int main(void) //MAP
 {
 	ft::map<char, int> mpp;
 	char c = '!';
-	for (int i = 1; i < 95; i++)
+	for (int i = 1; i < 10; i++)
 	{
 		ft::pair<char, int> pr (c, i);
 		c++;
 		mpp.insert(pr);
 	}
 	mpp.print();
+	/*
 	for ( ft::map<char , int>::iterator it = mpp.begin(); it != mpp.end(); it++ )
 	{
 		ft::map<char , int>::value_type val = *it;
@@ -54,6 +55,7 @@ int main(void) //MAP
 	ft::map<char, int> mp;
 	mp = mpp;
 	mp.print();
+	*/
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/17 10:56:29 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/17 12:26:15 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ namespace ft
 						map ( InputIterator first, InputIterator last, const key_compare& comp = key_compare(), 
 						const allocator_type& alloc = allocator_type() ) : _compare(comp), _alloc(alloc) {
 					this->_init_null_node();
-					this->insert(first, last);
+					this->insert<InputIterator>(first, last);
 				};
 				
 				map ( const map &other ) : _compare(other._compare), _alloc(other._alloc)
@@ -186,9 +186,7 @@ namespace ft
 
 				map	&operator=(const map& x)
 				{
-					//_compare = x._compare;
-					//_alloc = x._alloc;
-					//this->_init_null_node();
+					clear();
 					this->insert(x.begin(), x.end());
 					return (*this);
 				}
@@ -283,8 +281,10 @@ namespace ft
 
 				const mapped_type	&at( const key_type &k ) const
 				{
-					iterator	res = (this->insert(ft::make_pair(k,mapped_type()))).first;
-					return (res->second);
+					iterator	res = find(k);
+					if ( k != end() )
+						return (k->second);
+					throw ( std::out_of_range ("Out of Range") );
 				}
 
 				//////////MODIFIERS//////////
@@ -512,12 +512,16 @@ namespace ft
 				{
 					node	*res = _alloc.allocate(1);
 					node	tmp(content);
+					//_alloc.construct(res, tmp);
+					(void)tmp;
+					res->parent = _null;
+					res->left = _null;
+					res->right = _null;
 
 					
-					tmp.parent = _null;
-					tmp.left = _null;
-					tmp.right = _null;
-					_alloc.construct(res, tmp);
+					//tmp.parent = _null;
+					//tmp.left = _null;
+					//tmp.right = _null;
 					return (res);
 				}
 
@@ -541,7 +545,8 @@ namespace ft
 						this->_free_all( nd->right);
 					if ( nd->left != _null )
 						this->_free_all( nd->left);
-					this->_free_node( nd );
+					if (nd != _null)
+						this->_free_node( nd );
 				}
 
 				void	_free_node( node *nd )
