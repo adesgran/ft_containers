@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/16 12:47:38 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/17 11:02:27 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,37 +37,22 @@
 
 int main(void) //MAP
 {
-	ft::map<std::string, int> mpp;
-	ft::pair<std::string, int> p1 ("Pizza", 1);
-	ft::pair<std::string, int> p2 ("Pizzb", 2);
-	ft::pair<std::string, int> p3 ("Pizzd", 2);
-	ft::pair<std::string, int> p4 ("Pizzc", 2);
-	ft::pair<std::string, int> p5 ("Pizze", 2);
-	ft::pair<std::string, int> p6 ("Pizzi", 2);
-	ft::pair<std::string, int> p7 ("Pizzh", 2);
-	ft::pair<std::string, int> p8 ("Pizzj", 2);
-	ft::pair<std::string, int> p9 ("Pizzg", 2);
-	ft::pair<std::string, int> p0 ("Pizzf", 2);
-	mpp.insert(p1);
-	mpp.insert(p2);
-	mpp.insert(p3);
-	mpp.insert(p4);
-	mpp.insert(p5);
-	mpp.insert(p6);
-	mpp.insert(p7);
-	mpp.insert(p8);
-	mpp.insert(p9);
-	mpp.insert(p0);
-	ft::map<std::string, int> mp;
+	ft::map<char, int> mpp;
+	char c = '!';
+	for (int i = 1; i < 95; i++)
+	{
+		ft::pair<char, int> pr (c, i);
+		c++;
+		mpp.insert(pr);
+	}
+	mpp.print();
+	for ( ft::map<char , int>::iterator it = mpp.begin(); it != mpp.end(); it++ )
+	{
+		ft::map<char , int>::value_type val = *it;
+		std::cout << val.first << " " << val.second << std::endl;
+	}
+	ft::map<char, int> mp;
 	mp = mpp;
-	//ft::map<std::string, int> mp(mpp);
-	mp["Pizz"] = 0;
-	std::cout << mp.size() << std::endl;
-	std::cout << mp.empty() << std::endl;
-	std::cout << "Pizzb : " << mp["Pizzb"] << std::endl;
-	ft::map<std::string, int>::mapped_type & pizzc = mp.at("Pizzc");
-	pizzc = 12;
-	std::cout << "Pizzc : " << mp.at("Pizzc") << std::endl;
 	mp.print();
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/16 15:10:11 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/17 10:56:29 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,18 +107,20 @@ namespace ft
 							bool		operator== (iterator const & it) const {return (_ptr == it._ptr);};
 							bool		operator!= (iterator const & it) const {return (_ptr != it._ptr);};
 
-							reference	operator* (void) const {return (_ptr->content);};
+							reference	operator* (void) const {return (_ptr->content);}
 							pointer		operator-> (void) const {return (&_ptr->content);};
 
 							iterator	&operator++ (void) {this->next(); return ( *this );};
-							iterator	operator++ (int) {iterator res = *this; _ptr++; return (res);};
+							iterator	operator++ (int) {iterator res = *this; this->next(); return (res);};
 							iterator	&operator-- (void) {this->previous(); return ( *this );};
-							iterator	operator-- (int) {iterator res = *this; _ptr--; return (res);};
+							iterator	operator-- (int) {iterator res = *this; this->previous(); return (res);};
 
 						private:
 							node_type	*_ptr;
 
 							void	next( void ) {
+								if ( _ptr == _ptr->left )
+									return ;
 								if ( _ptr->right != _ptr->right->left )
 								{
 									_ptr = _ptr->right;
@@ -508,10 +510,7 @@ namespace ft
 
 				node	*_new_node( const value_type &content = value_type() )
 				{
-					std::cout << "New node called" << std::endl;
-					//std::cout << "----New node : < " << content.first << ", " << content.second << " > " << std::endl;
 					node	*res = _alloc.allocate(1);
-					std::cout << "----Res allocated" << std::endl;
 					node	tmp(content);
 
 					
@@ -519,20 +518,13 @@ namespace ft
 					tmp.left = _null;
 					tmp.right = _null;
 					_alloc.construct(res, tmp);
-					std::cout << "Node Constructed" << std::endl;
 					return (res);
 				}
 
 				node	*_new_node( const key_type &key, const mapped_type &mapped )
 				{
-					std::cout << "New node bis called" << std::endl;
-					std::cout << "----TEST" << std::endl;
-					std::cout << "----value " << mapped << std::endl;
-					//std::cout << "----key : " << key << std::endl;
-					//std::cout << "----New node : < " << key << ", " << mapped << " > " << std::endl;
 					ft::pair<const key_type, mapped_type> content = ft::make_pair(key, mapped);
 					node	*res = _alloc.allocate(1);
-					std::cout << "----Res allocated" << std::endl;
 					node	tmp(content);
 
 					
@@ -540,7 +532,6 @@ namespace ft
 					tmp.left = _null;
 					tmp.right = _null;
 					_alloc.construct(res, tmp);
-					std::cout << "Node Constructed" << std::endl;
 					return (res);
 				}
 
@@ -605,7 +596,8 @@ namespace ft
 							indent += "|  ";
 						}
 						std::string sColor = root->color == RED ? "RED" : "BLACK";
-						std::cout << root->content.first << "(" << sColor << ")" << std::endl;
+						std::string Color = root->color == RED ? "\033[0;31m" : "\033[0;37m";
+						std::cout << Color << root->content.first << "(" << sColor << ")\033[0m" << std::endl;
 						printHelper(root->left, indent, false);
 						printHelper(root->right, indent, true);
 					}
@@ -767,6 +759,7 @@ namespace ft
 							break;
 					}
 					_null->right->color = BLACK;
+					_null->parent = _null;
 				};
 
 				node	*insert_node( node *nde )
@@ -780,6 +773,7 @@ namespace ft
 						nde->color = BLACK;
 						return (nde);
 					}
+					y = y->right;
 					while (1)
 					{
 						if ( _equal( nde, y ) ) 
