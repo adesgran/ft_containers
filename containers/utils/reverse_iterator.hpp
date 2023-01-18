@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:50:53 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/18 12:36:36 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/18 13:17:23 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ namespace ft
 			reverse_iterator	&operator--(void) {*this->_it++; return (*this);};
 			reverse_iterator	operator--(int) {reverse_iterator tmp = *this;++(*this); return(tmp);};
 			reverse_iterator	&operator-= (difference_type n) {this->_it += n; return (*this);};
-			pointer				&operator-> () const {return (&(operator*()));};
+			pointer				operator-> () const {return (&(operator*()));};
 			reference			operator[] (difference_type n) const {return (this->base()[-n -1]);};
 
 		private:

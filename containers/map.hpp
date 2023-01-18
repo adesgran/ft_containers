@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/18 12:34:10 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/18 14:15:38 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ namespace ft
 				typedef	typename allocator_type::const_pointer			const_pointer;
 				typedef	mapIterator<false>								iterator;
 				typedef	mapIterator<true>								const_iterator;
-				typedef	ft::reverse_iterator<mapIterator<false> >			reverse_iterator;
+				typedef	ft::reverse_iterator<mapIterator<false> >		reverse_iterator;
 				typedef	ft::reverse_iterator<mapIterator<true> >		const_reverse_iterator;
 				typedef typename iterator::difference_type				difference_type;
 				typedef	size_t											size_type;
@@ -183,12 +183,14 @@ namespace ft
 				map ( const map &other ) : _compare(other._compare), _alloc(other._alloc)
 				{
 					this->_init_null_node();
-					this->insert(other.begin(), other.end());
+					*this = other;
 				}
 
 				map	&operator=(const map& x)
 				{
 					clear();
+					_alloc = x._alloc;
+					_compare = x._compare;
 					this->insert(x.begin(), x.end());
 					return (*this);
 				}
@@ -365,9 +367,9 @@ namespace ft
 					node	*tmp = _null->right;
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+						if ( _compare(key, tmp->content.first) == false && _compare(tmp->content.first, key) == false )
 							return (1);
-						if (key_compare(key, tmp->content.first))
+						if (_compare(key, tmp->content.first))
 							tmp = tmp->left;
 						else
 							tmp = tmp->right;
@@ -381,9 +383,9 @@ namespace ft
 					node	*tmp = _null->right;
 					while ( tmp != tmp->left )
 					{
-						if ( comp(key, tmp->content.first) == false && comp(tmp->content.first, key) == false )
+						if ( _compare(key, tmp->content.first) == false && _compare(tmp->content.first, key) == false )
 							return ( iterator(tmp) );
-						if (comp(key, tmp->content.first))
+						if (_compare(key, tmp->content.first))
 							tmp = tmp->left;
 						else
 							tmp = tmp->right;
@@ -396,9 +398,9 @@ namespace ft
 					node	*tmp = _null->right;
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare(key, tmp->content.first) == false && key_compare(tmp->content.first, key) == false )
+						if ( _compare(key, tmp->content.first) == false && _compare(tmp->content.first, key) == false )
 							return ( const_iterator(tmp) );
-						if (key_compare(key, tmp->content.first))
+						if (_compare(key, tmp->content.first))
 							tmp = tmp->left;
 						else
 							tmp = tmp->right;
@@ -422,9 +424,9 @@ namespace ft
 
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare()( key, tmp->content.first ) == false && key_compare()( tmp->content.first, key ) == false )
+						if ( _compare()( key, tmp->content.first ) == false && _compare()( tmp->content.first, key ) == false )
 							return ( iterator( tmp ) );
-						else if ( key_compare()( key, tmp->content.first ) )
+						else if ( _compare()( key, tmp->content.first ) )
 						{
 							if ( tmp->left == _null )
 								return ( iterator( tmp ) );
@@ -446,9 +448,9 @@ namespace ft
 
 					while ( tmp != tmp->left )
 					{
-						if ( key_compare( key, tmp->content.first ) == false && key_compare( tmp->content.first, key ) == false )
+						if ( _compare( key, tmp->content.first ) == false && _compare( tmp->content.first, key ) == false )
 							return ( const_iterator( tmp ) );
-						else if ( key_compare( key, tmp->content.first ) )
+						else if ( _compare( key, tmp->content.first ) )
 						{
 							if ( tmp->left == _null )
 								return ( const_iterator( tmp ) );
@@ -468,7 +470,7 @@ namespace ft
 				{
 					iterator	res = lower_bound( key );
 
-					if ( key_compare( key, res->first ) == false && key_compare( res->first, key ) == false )
+					if ( _compare( key, res->first ) == false && _compare( res->first, key ) == false )
 						res++;
 
 					return ( res );
@@ -478,7 +480,7 @@ namespace ft
 				{
 					const_iterator	res = lower_bound( key );
 
-					if ( key_compare( key, res->first ) == false && key_compare( res->first, key ) == false )
+					if ( _compare( key, res->first ) == false && _compare( res->first, key ) == false )
 						res++;
 
 					return ( res );
@@ -497,7 +499,7 @@ namespace ft
 				};
 
 			private :
-				value_compare	_compare;
+				key_compare		_compare;
 				allocator_type	_alloc;
 				node			*_null;
 				
@@ -534,37 +536,38 @@ namespace ft
 
 				void	_free_node( node *nd )
 				{
+					_alloc.destroy(nd);
 					_alloc.deallocate(nd, 1);
 				}
 
 				bool	_equal( node *lhs, node *rhs ) const
 				{
-					return ( _compare(lhs->content, rhs->content) == false && _compare(rhs->content, lhs->content) == false );
+					return ( _compare(lhs->content.first, rhs->content.first) == false && _compare(rhs->content.first, lhs->content.first) == false );
 				}
 
 				bool	_inferior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(lhs->content, rhs->content) );
+					return ( _compare(lhs->content.first, rhs->content.first) );
 				}
 
 				bool	_superior( node *lhs, node *rhs ) const
 				{
-					return ( _compare(rhs->content, lhs->content) );
+					return ( _compare(rhs->content.first, lhs->content.first) );
 				}
 
 				bool	_equal( value_type lhs, value_type rhs ) const
 				{
-					return ( _compare(lhs, rhs) == false && _compare(rhs, lhs) == false );
+					return ( _compare(lhs.first, rhs.first) == false && _compare(rhs.first, lhs.first) == false );
 				}
 
 				bool	_inferior( value_type lhs, value_type rhs ) const
 				{
-					return ( _compare(lhs, rhs) );
+					return ( _compare(lhs.first, rhs.first) );
 				}
 
 				bool	_superior( value_type lhs, value_type rhs ) const
 				{
-					return ( _compare(rhs, lhs) );
+					return ( _compare(rhs.first, lhs.first) );
 				}
 
 				//////////OTHERS//////////
