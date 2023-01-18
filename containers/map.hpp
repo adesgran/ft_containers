@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/17 12:26:15 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/18 12:34:10 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # define BLACK 42
 
 # include "utils/pair.hpp"
+# include "utils/equal.hpp"
+# include "utils/lexicographical_compare.hpp"
 # include "utils/iterator_traits.hpp"
 # include "utils/iterator_tag.hpp"
 # include "utils/iterator.hpp"
@@ -156,9 +158,9 @@ namespace ft
 				typedef	typename allocator_type::const_reference		const_reference;
 				typedef	typename allocator_type::pointer				pointer;
 				typedef	typename allocator_type::const_pointer			const_pointer;
-				typedef	mapIterator<>									iterator;
+				typedef	mapIterator<false>								iterator;
 				typedef	mapIterator<true>								const_iterator;
-				typedef	ft::reverse_iterator<mapIterator<> >			reverse_iterator;
+				typedef	ft::reverse_iterator<mapIterator<false> >			reverse_iterator;
 				typedef	ft::reverse_iterator<mapIterator<true> >		const_reverse_iterator;
 				typedef typename iterator::difference_type				difference_type;
 				typedef	size_t											size_type;
@@ -308,7 +310,7 @@ namespace ft
 				{
 					while ( first != last )
 					{
-						node	*nde = _new_node( first->first, first->second );
+						node	*nde = _new_node( *first );
 						node	*res = insert_node( nde );
 						if (res != nde )
 							_free_node(nde);
@@ -347,7 +349,7 @@ namespace ft
 				{
 					node * tmp = _null;
 					_null = x._null;
-					x->_null = tmp;
+					x._null = tmp;
 				}
 
 				void	clear( void )
@@ -404,7 +406,7 @@ namespace ft
 					return ( this->end() );
 				}
 
-				ft::pair<iterator, iterator> equal_range( const Key & key ) 
+				ft::pair<iterator, iterator> equal_rangel( const Key & key ) 
 				{
 					return ( ft::pair<iterator, iterator>( lower_bound( key ), upper_bound( key ) ) );
 				}
@@ -512,26 +514,7 @@ namespace ft
 				{
 					node	*res = _alloc.allocate(1);
 					node	tmp(content);
-					//_alloc.construct(res, tmp);
-					(void)tmp;
-					res->parent = _null;
-					res->left = _null;
-					res->right = _null;
 
-					
-					//tmp.parent = _null;
-					//tmp.left = _null;
-					//tmp.right = _null;
-					return (res);
-				}
-
-				node	*_new_node( const key_type &key, const mapped_type &mapped )
-				{
-					ft::pair<const key_type, mapped_type> content = ft::make_pair(key, mapped);
-					node	*res = _alloc.allocate(1);
-					node	tmp(content);
-
-					
 					tmp.parent = _null;
 					tmp.left = _null;
 					tmp.right = _null;
@@ -946,6 +929,49 @@ namespace ft
 				}
 		};
 
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator==( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			if ( lhs.size() != rhs.size() )
+				return ( false );
+			return ( ft::equal (lhs.begin(), lhs.end(), rhs.begin()) );
+		}
+
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator!=( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			return ( !(lhs == rhs) );
+		}
+
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator<( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			return ( ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) );
+		}
+
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator>( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			return ( rhs < lhs );
+		}
+
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator<=( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			return ( !( lhs > rhs ) );
+		}
+
+	template< class Key, class T, class Compare, class Alloc >
+		bool operator>=( const map<Key,T,Compare,Alloc>& lhs,
+				const map<Key,T,Compare,Alloc>& rhs )
+		{
+			return ( !( lhs < rhs ) );
+		}
 }
 
 #endif

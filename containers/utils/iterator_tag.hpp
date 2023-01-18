@@ -6,14 +6,12 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/17 00:14:22 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/12 13:02:07 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/01/18 10:57:44 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ITERATOR_TAG_HPP
 # define ITERATOR_TAG_HPP
-
-# define DEBUG 1
 
 # include <iostream>
 # include <string>
