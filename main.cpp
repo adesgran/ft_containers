@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/18 12:25:43 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/02 12:08:50 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,29 +37,13 @@
 
 int main(void) //MAP
 {
-	ft::map<char, int> mpp;
-	char c = 'a';
-	for (int i = 1; i < 10; i++)
-	{
-		ft::pair<char, int> pr (c, i);
-		c++;
-		mpp.insert(pr);
-	}
-	std::cout << mpp.size() << std::endl;
-	mpp.print();
 	ft::map<char, int> mp;
-	mp = mpp;
-	std::cout << "Equals : " << ((mp == mpp) ? "true" : "false") << std::endl;
-	/*
-	for ( ft::map<char , int>::iterator it = mpp.begin(); it != mpp.end(); it++ )
-	{
-		ft::map<char , int>::value_type val = *it;
-		std::cout << val.first << " " << val.second << std::endl;
-	}
-	ft::map<char, int> mp;
-	mp = mpp;
-	mp.print();
-	*/
+
+	mp.insert(ft::pair<char, int>('c', 12));
+	mp.insert(ft::pair<char, int>('a', 11));
+	mp.insert(ft::pair<char, int>('b', 13));
+	ft::map<char, int>::iterator it = mp.begin();
+	it = mp.upper_bound('b');
 	return (0);
 }
 

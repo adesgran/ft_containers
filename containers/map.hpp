@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/01/18 14:15:38 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/02 12:11:41 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -424,9 +424,9 @@ namespace ft
 
 					while ( tmp != tmp->left )
 					{
-						if ( _compare()( key, tmp->content.first ) == false && _compare()( tmp->content.first, key ) == false )
+						if ( _compare( key, tmp->content.first ) == false && _compare( tmp->content.first, key ) == false )
 							return ( iterator( tmp ) );
-						else if ( _compare()( key, tmp->content.first ) )
+						else if ( _compare( key, tmp->content.first ) )
 						{
 							if ( tmp->left == _null )
 								return ( iterator( tmp ) );
