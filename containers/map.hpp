@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/02 12:11:41 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/03 14:51:43 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,9 @@ namespace ft
 					class mapIterator  //RB Tree
 					{
 						public:
-							typedef	ft::bidirectional_iterator_tag											iterator_category;
 							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
 							typedef typename Ternary<Const, const map::node, map::node>::type				node_type;
+							typedef	typename ft::iterator<std::bidirectional_iterator_tag, value_type>::iterator_category		iterator_category;
 							typedef	ptrdiff_t																difference_type;
 							typedef	size_t																	size_type;
 							typedef	value_type*																pointer;
@@ -100,12 +100,15 @@ namespace ft
 							typedef	mapIterator<Const>														iterator;
 
 							mapIterator() : _ptr(NULL) {};
+							mapIterator( mapIterator<false> it ) : _ptr( it.getPtr() ) {};
+							mapIterator( mapIterator const & it ) : _ptr( it.getPtr() ) {};
 							mapIterator(node_type *ptr) : _ptr(ptr) {};
 							~mapIterator() {};
 
 							node_type	*getPtr(void) const {return (_ptr);};
 
-							iterator	operator= (iterator const & it) {_ptr = it._ptr;return (*this);};
+							//iterator	operator= (iterator const & it) {_ptr = it._ptr;return (*this);};
+							mapIterator	operator= (mapIterator const & it) { _ptr = it.getPtr(); return (*this) ; };
 							bool		operator== (iterator const & it) const {return (_ptr == it._ptr);};
 							bool		operator!= (iterator const & it) const {return (_ptr != it._ptr);};
 
@@ -138,7 +141,12 @@ namespace ft
 							};
 
 							void	previous( void ) {
-								if (_ptr->left != _ptr->left->left )
+								if ( _ptr->left == _ptr )
+								{
+									while (_ptr->right != _ptr->right->left)
+										_ptr = _ptr->right;
+								}
+								else if (_ptr->left != _ptr->left->left )
 								{
 									_ptr = _ptr->left;
 									while ( _ptr->right != _ptr->right->left )
@@ -304,8 +312,12 @@ namespace ft
 
 				iterator	insert(iterator position, const value_type & val )
 				{
-					ft::pair<iterator, bool> res = this->insert(position, val);
-					return (res.first);
+					//ft::pair<iterator, bool> res = this->insert(position, val);
+					node	*nde = _new_node( val );
+					node	*res = insert_node( position, nde );
+					if ( res != nde )
+						_free_node(nde);
+					return ( iterator( res ) );
 				}
 
 				template <class InputIterator> void insert (InputIterator first, InputIterator last)
@@ -408,7 +420,7 @@ namespace ft
 					return ( this->end() );
 				}
 
-				ft::pair<iterator, iterator> equal_rangel( const Key & key ) 
+				ft::pair<iterator, iterator> equal_range( const Key & key ) 
 				{
 					return ( ft::pair<iterator, iterator>( lower_bound( key ), upper_bound( key ) ) );
 				}
@@ -783,6 +795,48 @@ namespace ft
 						else
 						{
 							if ( y->left != _null )
+								y = y->left;
+							else
+							{
+								y->left = nde;
+								nde->parent = y;
+								break;
+							}
+						}
+					}
+					insert_fix(nde);
+					return (nde);
+				};
+
+				node	*insert_node( iterator position, node *nde )
+				{
+					node	*y = position.getPtr();
+
+					//return (nde );
+					if ( y == _null || this->size() < 2 )
+						return ( insert_node( nde ) );
+					while (1)
+					{
+						if ( _equal( nde, y ) ) 
+							return ( y );
+						else if ( _inferior( y, nde ) )
+						{
+							if ( y->parent != _null && y == y->parent->left && _inferior( y->parent, nde ) )
+								y = y->parent;
+							else if ( y->right != _null )
+								y = y->right;
+							else
+							{
+								y->right = nde;
+								nde->parent = y;
+								break;
+							}
+						}
+						else
+						{
+							if ( y->parent != _null && y == y->parent->right && _inferior( nde, y->parent ) )
+								y = y->parent;
+							else if ( y->left != _null )
 								y = y->left;
 							else
 							{

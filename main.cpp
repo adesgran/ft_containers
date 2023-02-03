@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/02 12:08:50 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/03 14:54:11 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,24 @@
 
 int main(void) //MAP
 {
+	//typedef ft::map<char, int> maptype;
 	ft::map<char, int> mp;
 
 	mp.insert(ft::pair<char, int>('c', 12));
 	mp.insert(ft::pair<char, int>('a', 11));
 	mp.insert(ft::pair<char, int>('b', 13));
-	ft::map<char, int>::iterator it = mp.begin();
+	ft::map<char, int>::iterator it = mp.end();
 	it = mp.upper_bound('b');
+	mp.insert(mp.begin(), ft::pair<char, int>('d', 33) );
+	for (ft::map<char, int>::const_iterator it = mp.begin(); it != mp.end(); it++)
+	{
+		std::cout << it->first << " / " << it->second << std::endl;
+	}
+	mp.print();
+	ft::map<char, int> mpp(++mp.begin(), mp.end());
+	mpp.print();
+	mpp.clear();
+	mpp.print();
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/12 11:06:27 by adesgran          #+#    #+#             */
-/*   Updated: 2022/10/13 11:06:43 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/03 13:45:42 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,47 +23,47 @@ namespace ft
 		class iterator;
 
 	template <class T, class _Distance, class _Pointer, class _Reference> 
-		class iterator <ft::input_iterator_tag, T, _Distance, _Pointer, _Reference>
+		class iterator <std::input_iterator_tag, T, _Distance, _Pointer, _Reference>
 		{
 			public :
 				typedef	T						value_type;
 				typedef	ptrdiff_t				difference_type;
 				typedef	T*						pointer;
 				typedef	T&						reference;
-				typedef	ft::input_iterator_tag	iterator_category;
+				typedef	std::input_iterator_tag	iterator_category;
 		};
 
 	template <class T, class _Distance, class _Pointer, class _Reference> class iterator 
-		<ft::forward_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<ft::input_iterator_tag, T>
+		<std::forward_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<std::input_iterator_tag, T>
 		{
 			public :
 				typedef	T							value_type;
 				typedef	ptrdiff_t					difference_type;
 				typedef	T*							pointer;
 				typedef	T&							reference;
-				typedef	ft::forward_iterator_tag	iterator_category;
+				typedef	std::forward_iterator_tag	iterator_category;
 		};
 
 	template <class T, class _Distance, class _Pointer, class _Reference> class iterator 
-		<ft::bidirectional_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<ft::forward_iterator_tag, T>
+		<std::bidirectional_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<std::forward_iterator_tag, T>
 		{
 			public :
 				typedef	T								value_type;
 				typedef	ptrdiff_t						difference_type;
 				typedef	T*								pointer;
 				typedef	T&								reference;
-				typedef	ft::bidirectional_iterator_tag	iterator_category;
+				typedef	std::bidirectional_iterator_tag	iterator_category;
 		};
 
 	template <class T, class _Distance, class _Pointer, class _Reference> class iterator
-		<ft::random_access_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<ft::bidirectional_iterator_tag, T>
+		<std::random_access_iterator_tag, T, _Distance, _Pointer, _Reference> : public iterator<std::bidirectional_iterator_tag, T>
 		{
 			public :
 				typedef	T								value_type;
 				typedef	ptrdiff_t						difference_type;
 				typedef	T*								pointer;
 				typedef	T&								reference;
-				typedef	ft::random_access_iterator_tag	iterator_category;
+				typedef	std::random_access_iterator_tag	iterator_category;
 		};
 
 };
