@@ -3,6 +3,7 @@
 ft_containers
 a.out
 log_error
+tester
 
 # Prerequisites
 *.d
