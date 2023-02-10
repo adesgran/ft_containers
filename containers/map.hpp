@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/03 14:51:43 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/10 13:15:05 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # define RED 101
 # define BLACK 42
 
+# include <memory>
 # include "utils/pair.hpp"
 # include "utils/equal.hpp"
 # include "utils/lexicographical_compare.hpp"
@@ -86,24 +87,28 @@ namespace ft
 
 				};
 
-				template <bool Const = false>
+				template <class Vt>
 					class mapIterator  //RB Tree
 					{
 						public:
-							typedef	typename Ternary<Const, const map::value_type, map::value_type>::type	value_type;
-							typedef typename Ternary<Const, const map::node, map::node>::type				node_type;
+							typedef	Vt																value_type;
+							typedef typename map::node														node_type;
 							typedef	typename ft::iterator<std::bidirectional_iterator_tag, value_type>::iterator_category		iterator_category;
 							typedef	ptrdiff_t																difference_type;
 							typedef	size_t																	size_type;
 							typedef	value_type*																pointer;
 							typedef	value_type&																reference;
-							typedef	mapIterator<Const>														iterator;
+							typedef	mapIterator																iterator;
 
 							mapIterator() : _ptr(NULL) {};
-							mapIterator( mapIterator<false> it ) : _ptr( it.getPtr() ) {};
+							//mapIterator( mapIterator const  &it ) : _ptr( it.getPtr() ) {};
 							mapIterator( mapIterator const & it ) : _ptr( it.getPtr() ) {};
 							mapIterator(node_type *ptr) : _ptr(ptr) {};
 							~mapIterator() {};
+
+							operator	mapIterator<const Vt> () {
+								return (mapIterator<const Vt>(_ptr));
+							}
 
 							node_type	*getPtr(void) const {return (_ptr);};
 
@@ -130,12 +135,21 @@ namespace ft
 								{
 									_ptr = _ptr->right;
 									while (_ptr->left != _ptr->left->left)
+									{
 										_ptr = _ptr->left;
+										//std::cout << "Loop 1" << std::endl;
+										//std::cout << _ptr->content.first << "   ";
+										//std::cout << _ptr->left->content.first << "   ";
+										//std::cout << _ptr->left->left->content.first <<std::endl;
+									}
 								}
 								else
 								{
 									while ( _ptr->parent != _ptr && _ptr->parent->right == _ptr )	
+									{
 										_ptr = _ptr->parent;
+										//std::cout << "Loop 2" << std::endl;
+									}
 									_ptr = _ptr->parent;
 								}
 							};
@@ -166,10 +180,10 @@ namespace ft
 				typedef	typename allocator_type::const_reference		const_reference;
 				typedef	typename allocator_type::pointer				pointer;
 				typedef	typename allocator_type::const_pointer			const_pointer;
-				typedef	mapIterator<false>								iterator;
-				typedef	mapIterator<true>								const_iterator;
-				typedef	ft::reverse_iterator<mapIterator<false> >		reverse_iterator;
-				typedef	ft::reverse_iterator<mapIterator<true> >		const_reverse_iterator;
+				typedef	mapIterator<value_type>							iterator;
+				typedef	mapIterator<const value_type>					const_iterator;
+				typedef	ft::reverse_iterator<iterator>					reverse_iterator;
+				typedef	ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 				typedef typename iterator::difference_type				difference_type;
 				typedef	size_t											size_type;
 
@@ -196,10 +210,14 @@ namespace ft
 
 				map	&operator=(const map& x)
 				{
+					if ( &x == this )
+						return (*this);
 					clear();
-					_alloc = x._alloc;
-					_compare = x._compare;
-					this->insert(x.begin(), x.end());
+					{
+						_alloc = x._alloc;
+						_compare = x._compare;
+					}
+						this->insert(x.begin(), x.end());
 					return (*this);
 				}
 
@@ -219,14 +237,14 @@ namespace ft
 
 				iterator	begin( void ) {
 					node	*res = _null->right;
-					while ( res->left != res->left->left )
+					while ( res->left != _null )
 						res = res->left;
 					return (iterator( res ));
 				}
 					
 				const_iterator	begin( void ) const {
 					node	*res = _null->right;
-					while ( res->left != res->left->left )
+					while ( res->left != _null )
 						res = res->left;
 					return (const_iterator( res ));
 				}
@@ -334,7 +352,8 @@ namespace ft
 
 				void	erase( iterator position )
 				{
-					remove_node( get_node( position->first ) );
+					if ( position != end() )
+						remove_node( position.getPtr() );
 				}
 
 				size_type	erase ( const key_type& k )
@@ -855,14 +874,14 @@ namespace ft
 					if ( parent->left == child )
 					{
 						parent->left = new_child;
-						if ( new_child )
+						if ( new_child != _null )
 							new_child->parent = parent;
 						child->parent = _null;
 					}
 					else if ( parent->right == child )
 					{
 						parent->right = new_child;
-						if ( new_child )
+						if ( new_child != _null )
 							new_child->parent = parent;
 						child->parent = _null;
 					}
@@ -909,6 +928,7 @@ namespace ft
 						y->left->parent = y;
 						y->color = z->color;
 					}
+					_alloc.destroy( z );
 					_alloc.deallocate( z, 1 );
 					if ( y_originalColor == BLACK )
 						remove_fix(x);
@@ -917,15 +937,16 @@ namespace ft
 				void	remove_fix( node * x )
 				{
 					node	*s;
-					while ( x != _null->right  && x->color == BLACK )
+					while ( x != _null && x != _null->right && x->color == BLACK )
 					{
+						//std::cout << "Remove Fix" << std::endl;
 						if ( x == x->parent->left )
 						{
 							s = x->parent->right;
 							if ( s->color == RED )
 							{
 								s->color = BLACK;
-								x->parent->color = 1;
+								x->parent->color = RED;
 								lrotate_node( x->parent );
 								s = x->parent->right;
 							}

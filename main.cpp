@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/03 14:54:11 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/10 12:57:04 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,24 +37,77 @@
 
 int main(void) //MAP
 {
-	//typedef ft::map<char, int> maptype;
-	ft::map<char, int> mp;
+	typedef ft::map<std::string, std::string> type;
+	type mp;
 
-	mp.insert(ft::pair<char, int>('c', 12));
-	mp.insert(ft::pair<char, int>('a', 11));
-	mp.insert(ft::pair<char, int>('b', 13));
-	ft::map<char, int>::iterator it = mp.end();
-	it = mp.upper_bound('b');
-	mp.insert(mp.begin(), ft::pair<char, int>('d', 33) );
-	for (ft::map<char, int>::const_iterator it = mp.begin(); it != mp.end(); it++)
+	 mp.insert(ft::pair<std::string, std::string>("amigo de la tornada","apicf"));
+ mp.insert(ft::pair<std::string, std::string>("eqaha",""));
+ mp.insert(ft::pair<std::string, std::string>("frila",""));
+ mp.insert(ft::pair<std::string, std::string>("hasrb","un"));
+ mp.insert(ft::pair<std::string, std::string>("pgtrb","ijxna"));
+ mp.insert(ft::pair<std::string, std::string>("qyvtb",""));
+ mp.insert(ft::pair<std::string, std::string>("epbwc",""));
+ mp.insert(ft::pair<std::string, std::string>("lbzpd",""));
+ mp.insert(ft::pair<std::string, std::string>("tqdjg","pbjuo"));
+ mp.insert(ft::pair<std::string, std::string>("ezvxi","hkezj"));
+ mp.insert(ft::pair<std::string, std::string>("apegj","qzdjf"));
+ mp.insert(ft::pair<std::string, std::string>("ewrpj","wkwin"));
+ mp.insert(ft::pair<std::string, std::string>("wplzk",""));
+ mp.insert(ft::pair<std::string, std::string>("ujxwl","eebzm"));
+ mp.insert(ft::pair<std::string, std::string>("urqfn","blwpm"));
+ mp.insert(ft::pair<std::string, std::string>("atencion","jkayp"));
+ mp.insert(ft::pair<std::string, std::string>("hola amigo","aaloa"));
+ mp.insert(ft::pair<std::string, std::string>("amigo de pepito",""));
+ mp.insert(ft::pair<std::string, std::string>("exnwo","ggvzd"));
+ mp.insert(ft::pair<std::string, std::string>("rfecq",""));
+ mp.insert(ft::pair<std::string, std::string>("kxfbs","nfwsz"));
+ mp.insert(ft::pair<std::string, std::string>("omylt","uamyw"));
+ mp.insert(ft::pair<std::string, std::string>("trjqt",""));
+ mp.insert(ft::pair<std::string, std::string>("txpjw",""));
+ mp.insert(ft::pair<std::string, std::string>("shwtx",""));
+ mp.insert(ft::pair<std::string, std::string>("mnawx","un dos tres quatro"));
+	for (type::iterator it = mp.begin(); it != mp.end(); it++)
 	{
 		std::cout << it->first << " / " << it->second << std::endl;
 	}
 	mp.print();
-	ft::map<char, int> mpp(++mp.begin(), mp.end());
+	type mpp(mp.begin(), mp.end());
 	mpp.print();
-	mpp.clear();
+	std::cout << "Erase 1 :" << std::endl;
+	mpp.erase(mpp.begin());
+	std::cout << "Display : " << std::endl;
+	for (type::const_iterator it = mpp.begin(); it != mpp.end(); it++)
+	{
+		std::cout << it->first << " / " << it->second << std::endl;
+	}
 	mpp.print();
+	std::cout << "Erase 2 :" << std::endl;
+	mpp.erase(mpp.begin());
+	mpp.print();
+	std::cout << "Erase 3 :" << std::endl;
+	mpp.erase(mpp.begin());
+	mpp.print();
+	type mp2(mp);
+	type mp3 = mp2;
+	mp2.print();
+	mp3.print();
+	for (type::const_iterator it = mpp.begin(); it != mpp.end(); it++)
+	{
+		std::cout << it->first << " / " << it->second << std::endl;
+	}
+	for (type::const_iterator it = mp2.begin(); it != mp2.end(); it++)
+	{
+		std::cout << it->first << " / " << it->second << std::endl;
+	}
+	for (type::const_iterator it = mp3.begin(); it != mp3.end(); it++)
+	{
+		std::cout << it->first << " / " << it->second << std::endl;
+	}
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+
 	return (0);
 }
 
