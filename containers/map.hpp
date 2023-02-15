@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:12:32 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/10 13:15:05 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/15 13:24:52 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # define RED 101
 # define BLACK 42
 
+#include <stdlib.h>
 # include <memory>
 # include "utils/pair.hpp"
 # include "utils/equal.hpp"
@@ -137,10 +138,6 @@ namespace ft
 									while (_ptr->left != _ptr->left->left)
 									{
 										_ptr = _ptr->left;
-										//std::cout << "Loop 1" << std::endl;
-										//std::cout << _ptr->content.first << "   ";
-										//std::cout << _ptr->left->content.first << "   ";
-										//std::cout << _ptr->left->left->content.first <<std::endl;
 									}
 								}
 								else
@@ -148,7 +145,6 @@ namespace ft
 									while ( _ptr->parent != _ptr && _ptr->parent->right == _ptr )	
 									{
 										_ptr = _ptr->parent;
-										//std::cout << "Loop 2" << std::endl;
 									}
 									_ptr = _ptr->parent;
 								}
@@ -158,18 +154,24 @@ namespace ft
 								if ( _ptr->left == _ptr )
 								{
 									while (_ptr->right != _ptr->right->left)
+									{
 										_ptr = _ptr->right;
+									}
 								}
 								else if (_ptr->left != _ptr->left->left )
 								{
 									_ptr = _ptr->left;
 									while ( _ptr->right != _ptr->right->left )
+									{
 										_ptr = _ptr->right;
+									}
 								}
 								else
 								{
 									while (_ptr->parent != _ptr && _ptr->parent->left == _ptr )
+									{
 										_ptr = _ptr->parent;
+									}
 									_ptr = _ptr->parent;
 								}
 							}
@@ -217,7 +219,7 @@ namespace ft
 						_alloc = x._alloc;
 						_compare = x._compare;
 					}
-						this->insert(x.begin(), x.end());
+					this->insert(x.begin(), x.end());
 					return (*this);
 				}
 
@@ -359,7 +361,7 @@ namespace ft
 				size_type	erase ( const key_type& k )
 				{
 					node	*nde = get_node( k );
-					if ( !nde )
+					if ( nde == _null )
 						return 0;
 					remove_node( nde );
 					return ( 1 );
@@ -651,7 +653,7 @@ namespace ft
 
 				void	rrotate_node( node *nde )
 				{
-					if (!nde->left)
+					if (nde->left == _null || nde == _null)
 						return ;
 					node *z = nde->parent;
 					node *y = nde->left;
@@ -671,7 +673,7 @@ namespace ft
 
 				void	lrotate_node( node *nde )
 				{
-					if (!nde->right)
+					if (nde->right == _null || nde == _null)
 						return ;
 					node *z = nde->parent;
 					node *y = nde->right;
@@ -692,13 +694,13 @@ namespace ft
 				void	lrrotate_node( node *nde )
 				{
 					rrotate_node(nde->left);
-					lrotate(nde);
+					lrotate_node(nde);
 				};
 
 				void	rlrotate_node( node *nde )
 				{
 					lrotate_node(nde->right);
-					rrotate(nde);
+					rrotate_node(nde);
 				};
 
 				bool	check_tree( node *nde, int &depth)
@@ -730,7 +732,7 @@ namespace ft
 				{
 					node	*tmp;
 
-					while ( nde->parent->color == RED )
+					while ( nde->parent->color == RED && nde != _null && nde != _null->right )
 					{
 						if ( nde->parent == nde->parent->parent->right )
 						{
@@ -831,7 +833,6 @@ namespace ft
 				{
 					node	*y = position.getPtr();
 
-					//return (nde );
 					if ( y == _null || this->size() < 2 )
 						return ( insert_node( nde ) );
 					while (1)
@@ -871,16 +872,16 @@ namespace ft
 
 				void	transplant_node( node *parent, node *child, node *new_child )
 				{
-					if ( parent->left == child )
+					if ( parent->right == child || parent == _null )
 					{
-						parent->left = new_child;
+						parent->right = new_child;
 						if ( new_child != _null )
 							new_child->parent = parent;
 						child->parent = _null;
 					}
-					else if ( parent->right == child )
+					else if ( parent->left == child )
 					{
-						parent->right = new_child;
+						parent->left = new_child;
 						if ( new_child != _null )
 							new_child->parent = parent;
 						child->parent = _null;
@@ -928,8 +929,11 @@ namespace ft
 						y->left->parent = y;
 						y->color = z->color;
 					}
-					_alloc.destroy( z );
-					_alloc.deallocate( z, 1 );
+					if (z != _null)
+					{
+						_alloc.destroy( z );
+						_alloc.deallocate( z, 1 );
+					}
 					if ( y_originalColor == BLACK )
 						remove_fix(x);
 				};
@@ -939,7 +943,6 @@ namespace ft
 					node	*s;
 					while ( x != _null && x != _null->right && x->color == BLACK )
 					{
-						//std::cout << "Remove Fix" << std::endl;
 						if ( x == x->parent->left )
 						{
 							s = x->parent->right;
@@ -1005,6 +1008,8 @@ namespace ft
 					}
 					x->color = BLACK;
 				}
+
+
 		};
 
 	template< class Key, class T, class Compare, class Alloc >

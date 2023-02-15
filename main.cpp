@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/10 12:57:04 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/15 13:23:37 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,47 +66,11 @@ int main(void) //MAP
  mp.insert(ft::pair<std::string, std::string>("txpjw",""));
  mp.insert(ft::pair<std::string, std::string>("shwtx",""));
  mp.insert(ft::pair<std::string, std::string>("mnawx","un dos tres quatro"));
-	for (type::iterator it = mp.begin(); it != mp.end(); it++)
-	{
-		std::cout << it->first << " / " << it->second << std::endl;
-	}
-	mp.print();
-	type mpp(mp.begin(), mp.end());
-	mpp.print();
-	std::cout << "Erase 1 :" << std::endl;
-	mpp.erase(mpp.begin());
-	std::cout << "Display : " << std::endl;
-	for (type::const_iterator it = mpp.begin(); it != mpp.end(); it++)
-	{
-		std::cout << it->first << " / " << it->second << std::endl;
-	}
-	mpp.print();
-	std::cout << "Erase 2 :" << std::endl;
-	mpp.erase(mpp.begin());
-	mpp.print();
-	std::cout << "Erase 3 :" << std::endl;
-	mpp.erase(mpp.begin());
-	mpp.print();
-	type mp2(mp);
-	type mp3 = mp2;
-	mp2.print();
-	mp3.print();
-	for (type::const_iterator it = mpp.begin(); it != mpp.end(); it++)
-	{
-		std::cout << it->first << " / " << it->second << std::endl;
-	}
-	for (type::const_iterator it = mp2.begin(); it != mp2.end(); it++)
-	{
-		std::cout << it->first << " / " << it->second << std::endl;
-	}
-	for (type::const_iterator it = mp3.begin(); it != mp3.end(); it++)
-	{
-		std::cout << it->first << " / " << it->second << std::endl;
-	}
+ mp.print();
+ unsigned int ret = mp.erase("apeg");
+ std::cout << "res = " << ret << std::endl;
+ mp.print();
 
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
 
 	return (0);
 }
