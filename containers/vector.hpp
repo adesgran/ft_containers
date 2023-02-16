@@ -6,13 +6,14 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/15 14:46:36 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/16 14:54:10 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+# include <fstream>
 
 # include <iostream>
 # include <string>
@@ -27,7 +28,12 @@
 # include "utils/is_integral.hpp"
 # include "utils/utils.hpp"
 
-void error_log(std::string str) { std::cerr << str << std::endl;};
+void error_log(std::string str) {
+	std::ofstream file;
+	file.open("out");
+	file << str << std::endl;
+	file.close();
+};
 
 namespace ft
 {
@@ -36,6 +42,7 @@ namespace ft
 		class vector
 		{
 			public:
+				/*
 				template <class Vt>
 					class vecIterator
 				{
@@ -43,7 +50,7 @@ namespace ft
 					public:
 						typedef	Vt																			value_type;
 						typedef typename ft::iterator<std::random_access_iterator_tag, value_type>::iterator_category	iterator_category;
-						typedef	ptrdiff_t																	difference_type;
+						typedef	typename iterator_traits<vecIterator>::difference_type								difference_type;
 						typedef	value_type*																	pointer;
 						typedef	value_type&																	reference;
 						typedef	vecIterator																	iterator;
@@ -68,13 +75,13 @@ namespace ft
 						bool		operator< (vecIterator const & it) const {return (_ptr < it._ptr);};
 						bool		operator<= (vecIterator const & it) const {return (_ptr <= it._ptr);};
 
-						pointer		operator+ (int i) const {return (_ptr + i);};
-						pointer		operator- (int i) const {return (_ptr - i);};
+						iterator	operator+ (difference_type i) const {return (iterator(_ptr + i));};
+						iterator	operator- (difference_type i) const {return (iterator(_ptr - i));};
 						difference_type	operator- (const vecIterator& it) const {return (_ptr - it.getPtr());};
-						iterator	&operator+= (int i) {_ptr += i; return (*this);};
-						iterator	&operator-= (int i) {_ptr -= i; return (*this);};
+						iterator	&operator+= (difference_type i) {_ptr += i; return (*this);};
+						iterator	&operator-= (difference_type i) {_ptr -= i; return (*this);};
 
-						reference	operator[] (size_t n) const {return (_ptr + n);};
+						reference	operator[] (difference_type n) const {return (*(_ptr + n));};
 						reference	operator* (void) const {return (*_ptr);};
 						pointer		operator-> (void) const {return (_ptr);};
 						
@@ -86,18 +93,23 @@ namespace ft
 					private:
 						pointer	_ptr;
 				};
+				*/
 				typedef	T											value_type;
 				typedef	Alloc										allocator_type;
 				typedef	typename allocator_type::reference			reference;
 				typedef	typename allocator_type::const_reference	const_reference;
 				typedef	typename allocator_type::pointer			pointer;
 				typedef	typename allocator_type::const_pointer		const_pointer;
+				typedef std::ptrdiff_t								difference_type;
+				typedef	size_t										size_type;
+				/*
 				typedef	vecIterator<value_type>						iterator;
 				typedef	vecIterator<const value_type>				const_iterator;
+				*/
+				typedef	T*											iterator;
+				typedef	const T*									const_iterator;
 				typedef	ft::reverse_iterator<iterator>				reverse_iterator;
 				typedef	ft::reverse_iterator<const_iterator>		const_reverse_iterator;
-				typedef typename iterator::difference_type			difference_type;
-				typedef	size_t										size_type;
 
 
 				//////////CONSTRUCTORS//////////
@@ -332,37 +344,45 @@ namespace ft
 
 				iterator insert (iterator position, const value_type& val) //NEED TO SEGFAULT IF (POSITION ++ THIS->END())
 				{
-					error_log("Insert 1");
+					iterator	begin = this->begin();
+					size_type	pos = size_type();
+					while ( begin++ != position )
+						pos++;
 					if (_size == _capacity)
-					{
-						vector tmp(*this);
-						*this = (_capacity == 0) ? vector(1) : vector(_capacity * 2);
-						*this = tmp;
-					}
-					iterator	tmp = this->end();
-					while (tmp > position)
-					{
-						*tmp = *(tmp - 1);
-						tmp--;
-					}
-					*position = val;
+						this->reserve(_capacity+1);
+						//this->reserve((_capacity == 0) ? 1 : _capacity * 2);
+					//iterator	tmp = this->end();
+					for ( size_type i = _size; i > pos; i-- )
+						(*this)[i] = (*this)[i-1];
+					(*this)[pos] = val;
 					_size++;
-					return (position);
+					return (iterator(&(*this)[pos]));
 				};
 				void insert (iterator position, size_type n, const value_type& val)
 				{
-					error_log("Insert 2");
-					iterator	tmp = position;
-					for (size_type s = 0; s < n && tmp != iterator(); s++)
-						tmp = this->insert(tmp, val);
+					size_type	i = position - _begin;
+					if ( _size + n > _capacity )
+						this->reserve( _size + n );
+					position = _begin + i;
+					for (size_type s = 0; s < n && position != iterator(); s++)
+						position = this->insert(position, val);
 				};
 				template <class InputIterator>    void insert (iterator position, InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
 				{
-					error_log("Insert 3");
-					iterator	tmp = position;
+					size_type	i = position - _begin;
+
+					size_type	n = size_type();
+					while ( first != last )
+					{
+						first++;
+						n++;
+					}
+					if ( _size + n > _capacity )
+						this->reserve( _size + n );
+					position = _begin + i;
 					for (InputIterator it = first; it != last; it++)
-						tmp = this->insert(tmp, *it);
+						position= this->insert(position, *it);
 				};
 
 				iterator erase (iterator position)
@@ -371,6 +391,11 @@ namespace ft
 						*it = *(it + 1);
 					*(this->end() - 1) = value_type();
 					_size--;
+					//this->reserve(_size);
+					vector tmp(_size);
+					tmp = *this;
+					this->clear();
+					*this = tmp;
 					return (position);
 				};
 				iterator erase (iterator first, iterator last)
@@ -378,12 +403,17 @@ namespace ft
 					size_type	n = last - first;
 					for (iterator it = first; it < this->end(); it++)
 					{
-						if (it + n < this->end().getPtr())
+						if (it + n < this->end())
 							*it = *(it + n);
 						else
 							*it = value_type();
 					}
 					_size -= n;
+					//this->reserve(_size);
+					vector tmp(_size);
+					tmp = *this;
+					this->clear();
+					*this = tmp;
 					return (first);
 
 				};
@@ -411,6 +441,9 @@ namespace ft
 					for (iterator it = this->begin(); it < this->end(); it++)
 						*it = value_type();
 					_size = 0;
+					_alloc.deallocate(_begin, _capacity);
+					_capacity = 0;
+					_begin = NULL;
 				};
 				 
 				//////////ALLOCATOR//////////
@@ -435,7 +468,6 @@ namespace ft
 						}
 						return (res);
 					}
-				
 
 		};
 

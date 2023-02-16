@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/15 13:23:37 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/16 14:52:31 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,58 @@
 # include "containers/utils/iterator.hpp"
 #endif
 
+template <class T>
+	void	printvec(const ft::vector<T> vec)
+{
+	std::cout << "Vector Size:" << std::endl;
+	std::cout << vec.size() << std::endl;
+	std::cout << "Vector Capacity:" << std::endl;
+	std::cout << vec.capacity() << std::endl;
 
+	std::cout << "Vector Print:" << std::endl;
+	for (ft::vector<int>::const_iterator it = vec.begin(); it != vec.end(); it++)
+		std::cout << *it << std::endl;
+	std::cout << "Vector Reverse Print:" << std::endl;
+	for (ft::vector<int>::const_reverse_iterator it = vec.rbegin(); it != vec.rend(); it++)
+		std::cout << *it << std::endl;
+}
+
+
+int main(void)
+{
+	ft::vector<int> vec(3, 100);
+	ft::vector<int> vec2(50, 101);
+	ft::vector<int> vec3(vec);
+	
+
+	vec.insert(vec.begin()+1, 3, 99);
+	vec.insert(vec.end(), vec2.begin()+2, vec2.end());
+	vec.reserve(2);
+	printvec(vec);
+	vec.insert(vec.begin()+2, 12);
+	printvec(vec);
+	vec.erase(vec.begin()+12);
+	printvec(vec);
+	vec.erase(vec.begin()+12, vec.end()-3);
+	printvec(vec);
+	vec.clear();
+	printvec(vec);
+	vec3.clear();
+	printvec(vec3);
+	std::cout << "Swap" << std::endl;
+	vec.swap(vec2);
+	printvec(vec);
+	printvec(vec2);
+	vec2.insert(vec2.begin(), 12, 12);
+	vec.swap(vec2);
+	printvec(vec);
+	printvec(vec2);
+	
+
+	return (0);
+}
+
+	/*
 int main(void) //MAP
 {
 	typedef ft::map<std::string, std::string> type;
@@ -74,7 +125,7 @@ int main(void) //MAP
 
 	return (0);
 }
-
+*/
 /*
 int main(void) //VECTOR
 {
