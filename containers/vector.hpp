@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:28:01 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/16 14:54:10 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:59:11 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,27 +113,20 @@ namespace ft
 
 
 				//////////CONSTRUCTORS//////////
-				explicit vector (const allocator_type& alloc = allocator_type())
+				explicit vector (const allocator_type& alloc = allocator_type()) :
+					_alloc(alloc), _begin(NULL), _size(0), _capacity(0)
 				{
 					error_log("Vector contructor 1");
-					_alloc = alloc;
-					_begin = NULL;
-					_size = 0;
-					_capacity = 0;
-					
 				};
 
-				explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
+				explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
+					_alloc(alloc), _begin(NULL), _size(n), _capacity(n)
 				{
 					error_log("Vector contructor 2");
 					
-					_alloc = alloc;
-					//_capacity = _required_capacity(n);
-					_capacity = n;
-					_size = n;
 					_begin = _alloc.allocate(_capacity);
 					for (size_type i = 0; i < n; i++)
-						(*this)[i] = val;
+						_alloc.construct( _begin + i, val );
 				}
 
 				template <class InputIterator> vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
@@ -158,13 +151,14 @@ namespace ft
 					
 					for ( ; first != last; first++)
 					{
-						*_begin_cpy = (T)*first;
+						//*_begin_cpy = (T)*first;
+						_alloc.construct( _begin_cpy, *first );
 						_begin_cpy++;
 					}
 
 				}
 
-				vector( const vector &cpy )
+				vector( const vector<T, Alloc> &cpy )
 				{
 					error_log("Vector contructor 4");
 					_alloc = cpy._alloc;
@@ -173,7 +167,7 @@ namespace ft
 					_begin = _alloc.allocate(_capacity);
 
 					for (size_type n = 0; n < _size; n++)
-						(*this)[n] = cpy[n];
+						_alloc.construct( _begin + n, cpy._begin[n] );
 				};
 
 				vector &operator=( const vector &cpy )
@@ -229,57 +223,47 @@ namespace ft
 				//////////CAPACITY//////////
 				size_type	size() const {return (_size);};
 				size_type	max_size() const {return (_alloc.max_size());};
+
 				void		resize(size_type n, value_type val = value_type()) {
-					if (n == _size || n > this->max_size())
-						return ;
-					if (n < _size)
+					bool	change = false;
+					size_type	capacity = _capacity;
+
+					if (n < _capacity)
+						change = true;
+
+					if (n <= _size)
 					{
-						for (size_type s = n; s < _size; s++)
-							(*this)[s] = value_type();
-						_size = n;
+						if (n > 2 * _size)
+							reserve(n);
+						else
+							reserve(2 * _size);
+
+						for (size_type i = _size; i < n; i++)
+							_alloc.construct(_begin + i, val);
 					}
-					else if (n <= _capacity)
+					else if (n < _size)
 					{
-						for (size_type s = _size; s < n; s++)
-							(*this)[s] = val;
-						_size = n;
+						for (size_type i = _size; i < n; i++)
+							_alloc.destroy(_begin + i);
 					}
-					else
-					{
-						pointer	res = _alloc.allocate(n);
-						pointer	tmp = res;
-						size_t	s = 0;
-						while (s < _size)
-						{
-							*tmp = (*this)[s];
-							tmp++;
-							s++;
-						}
-						while (s < n)
-						{
-							*tmp = val;
-							tmp++;
-							s++;
-						}
-						_alloc.deallocate(_begin, _capacity);
-						_begin = res;
-						_size = n;
-						_capacity = n;
-					}
+					if (change == true)
+						_capacity = capacity;
+					_size = n;
 				}
+
 				size_type	capacity() const {return (_capacity);};
 				bool		empty() const { return (_size == 0);};
 				void		reserve(size_type n)
 				{
+					if ( n > _alloc.max_size() )
+						throw std::length_error("vector::reserve");
 					if (n > _capacity)
 					{
-						pointer	res = _alloc.allocate(n);
-						pointer	tmp = res;
-						for (size_type s = 0; s < _size; s++)
-						{
-							*tmp = (*this)[s];
-							tmp++;
-						}
+						pointer res = _alloc.allocate( n );
+						for (size_type i = 0; i < _size; i++)
+							_alloc.construct( res + i, _begin[i] );
+						for (size_type i = 0; i < _size; i++)
+							_alloc.destroy(_begin + i);
 						_alloc.deallocate(_begin, _capacity);
 						_begin = res;
 						_capacity = n;
@@ -353,67 +337,98 @@ namespace ft
 						//this->reserve((_capacity == 0) ? 1 : _capacity * 2);
 					//iterator	tmp = this->end();
 					for ( size_type i = _size; i > pos; i-- )
-						(*this)[i] = (*this)[i-1];
-					(*this)[pos] = val;
+					{
+						_alloc.construct(_begin + i, *(_begin + i - 1));
+						_alloc.destroy(_begin + i - 1);
+					}
+					_alloc.construct(_begin + pos, val);
 					_size++;
 					return (iterator(&(*this)[pos]));
 				};
 				void insert (iterator position, size_type n, const value_type& val)
 				{
-					size_type	i = position - _begin;
-					if ( _size + n > _capacity )
-						this->reserve( _size + n );
-					position = _begin + i;
-					for (size_type s = 0; s < n && position != iterator(); s++)
-						position = this->insert(position, val);
+					iterator	begin = _begin;
+					size_type	i = 0;
+
+					if ( n == 0 )
+						return ;
+					while ( begin++ != position )
+						i++;
+					if ( _size + n >= _capacity )
+					{
+						if ( _size + n > 2 * _capacity )
+							reserve( _size + n );
+						else
+							reserve(2 * _size);
+					}
+					for ( size_type pos = _size; pos > i; pos-- )
+					{
+						_alloc.construct( _begin + (pos + n - 1), *(_begin + pos - 1) );
+						_alloc.destroy(_begin + pos - 1);
+					}
+					for (size_type pos = i; pos < i + n; pos++)
+						_alloc.construct(_begin + pos, val);
+					_size += n;
 				};
+
 				template <class InputIterator>    void insert (iterator position, InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
 				{
-					size_type	i = position - _begin;
-
+					size_type	i = 0;
+					size_type	begin = position - _begin;
 					size_type	n = size_type();
-					while ( first != last )
-					{
-						first++;
-						n++;
-					}
-					if ( _size + n > _capacity )
-						this->reserve( _size + n );
-					position = _begin + i;
 					for (InputIterator it = first; it != last; it++)
-						position= this->insert(position, *it);
+						n++;
+					if ( _size + n >= _capacity )
+					{
+						if (_capacity * 2 > n + _size)
+							reserve(_size * 2);
+						else
+							reserve(_size + n);
+					}
+					while (last != first)
+						insert(_begin + begin + i++, *first++);
 				};
 
 				iterator erase (iterator position)
 				{
+					if ( position == this->end() )
+						return ( this->end() );
+					_alloc.destroy( position );
 					for (iterator it = position; it < this->end() - 1; it++)
-						*it = *(it + 1);
-					*(this->end() - 1) = value_type();
+					{
+						_alloc.construct( it, *(it + 1));
+						_alloc.destroy( it + 1 );
+					}
 					_size--;
-					//this->reserve(_size);
-					vector tmp(_size);
-					tmp = *this;
-					this->clear();
-					*this = tmp;
 					return (position);
 				};
 				iterator erase (iterator first, iterator last)
 				{
 					size_type	n = last - first;
-					for (iterator it = first; it < this->end(); it++)
+					if ( !n ) 
+						return ( first );
+					for (iterator it = first; it < last; it++)
+						_alloc.destroy( it );
+
+					for (iterator it = first; it < this->end() -n; it++)
 					{
+						/*
 						if (it + n < this->end())
 							*it = *(it + n);
 						else
 							*it = value_type();
+						std::cerr<<"Here"<<std::endl;
+						*/
+						_alloc.construct(it, *(it + n));
+						_alloc.destroy(it + n);
 					}
 					_size -= n;
 					//this->reserve(_size);
-					vector tmp(_size);
-					tmp = *this;
-					this->clear();
-					*this = tmp;
+					//vector tmp(_size);
+					//tmp = *this;
+					//this->clear();
+					//*this = tmp;
 					return (first);
 
 				};
@@ -439,11 +454,11 @@ namespace ft
 				void clear()
 				{
 					for (iterator it = this->begin(); it < this->end(); it++)
-						*it = value_type();
+						_alloc.destroy(it);
 					_size = 0;
-					_alloc.deallocate(_begin, _capacity);
-					_capacity = 0;
-					_begin = NULL;
+					//_alloc.deallocate(_begin, _capacity);
+					//_capacity = 0;
+					//_begin = NULL;
 				};
 				 
 				//////////ALLOCATOR//////////

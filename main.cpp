@@ -6,7 +6,7 @@
 /*   By: adesgran <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/16 23:26:21 by adesgran          #+#    #+#             */
-/*   Updated: 2023/02/16 14:52:31 by adesgran         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:27:22 by adesgran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,10 @@ template <class T>
 
 int main(void)
 {
-	ft::vector<int> vec(3, 100);
+	ft::vector<int> vec(5, 100);
 	ft::vector<int> vec2(50, 101);
 	ft::vector<int> vec3(vec);
+	const ft::vector<int> veve(vec3);
 	
 
 	vec.insert(vec.begin()+1, 3, 99);
@@ -66,7 +67,9 @@ int main(void)
 	printvec(vec);
 	vec.erase(vec.begin()+12);
 	printvec(vec);
+	std::cerr << "HERE1" << std::endl;
 	vec.erase(vec.begin()+12, vec.end()-3);
+	std::cerr << "HERE1" << std::endl;
 	printvec(vec);
 	vec.clear();
 	printvec(vec);
